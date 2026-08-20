@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Reporte Proyectado Semanal de Habitabilidad VPP</title>
+<style>
+:root{
+  --petrol:#0E3F4F; --teal:#1F6F84; --teal-soft:#E4EFF2;
+  --steel:#F1F1F4; --line:#C9D1D7; --ink:#1C2429; --mute:#63707A;
+  --real:#7A5B18; --real-soft:#FBF4E4; --real-line:#D9C48A;
+  --alert:#A3341F; --ok:#1E6B4F; --paper:#FFFFFF;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--steel);color:var(--ink);
+  font-family:"Segoe UI",system-ui,-apple-system,Roboto,Helvetica,Arial,sans-serif;
+  font-size:15px;line-height:1.5}
+.wrap{max-width:1000px;margin:0 auto;padding:0 0 56px;background:var(--paper);
+  box-shadow:0 1px 3px rgba(14,63,79,.10)}
+.band{width:100%;padding-top:7.5%;background-image:url("data:image/jpeg;base64,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");
+  background-repeat:no-repeat;background-position:top center;background-size:100% auto;
+  background-color:var(--petrol)}
+.masthead{background:var(--paper);padding:22px 26px 20px;border-bottom:1px solid var(--line)}
+h1{margin:0;font-size:21px;font-weight:600;color:var(--petrol);text-transform:uppercase}
+.sub{margin:6px 0 0;font-size:13px;color:var(--mute);max-width:62ch}
+.block{background:var(--paper);padding:22px 26px;border-bottom:1px solid var(--line)}
+.eyebrow{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--teal);
+  font-weight:600;margin:0 0 14px}
+.field{margin-bottom:16px}.field:last-child{margin-bottom:0}
+label{display:block;font-size:12px;font-weight:600;margin-bottom:5px}
+.req{color:var(--alert)}
+.hint{font-size:12px;color:var(--mute);margin:4px 0 0}
+select,input[type=text],input[type=email],input[type=date]{width:100%;padding:9px 11px;
+  font:inherit;font-size:14px;color:var(--ink);background:var(--paper);
+  border:1px solid var(--line);border-radius:3px}
+select:focus,input:focus{outline:2px solid var(--teal);outline-offset:1px;border-color:var(--teal)}
+select:disabled{background:#F6F8F9;color:var(--mute)}
+.derived{padding:9px 11px;font-size:14px;background:var(--teal-soft);border:1px solid var(--teal);
+  border-radius:3px;color:var(--petrol);min-height:39px}
+.derived.empty{background:#F6F8F9;border:1px dashed var(--line);color:var(--mute)}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+
+/* ---------- registro semanal ---------- */
+.scroller{overflow-x:auto}
+.ledger{width:100%;border-collapse:separate;border-spacing:0;font-variant-numeric:tabular-nums;
+  min-width:840px}
+.ledger th{font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--mute);
+  font-weight:600;text-align:center;padding:5px 4px}
+.ledger th.day{text-align:left;width:96px}
+/* marcos de grupo */
+.gR{background:var(--real-soft);color:var(--real);font-size:11px;letter-spacing:.14em;
+  border-top:2px solid var(--real-line);border-left:2px solid var(--real-line);
+  border-right:2px solid var(--real-line);border-radius:6px 6px 0 0;padding:7px 4px}
+.gP{background:var(--teal-soft);color:var(--petrol);font-size:11px;letter-spacing:.14em;
+  border-top:2px solid var(--teal);border-left:2px solid var(--teal);
+  border-right:2px solid var(--teal);border-radius:6px 6px 0 0;padding:7px 4px}
+.inR{border-left:2px solid var(--real-line)} .outR{border-right:2px solid var(--real-line)}
+.inP{border-left:2px solid var(--teal)}      .outP{border-right:2px solid var(--teal)}
+.botR{border-bottom:2px solid var(--real-line)} .botP{border-bottom:2px solid var(--teal)}
+.staffR{color:var(--real);border-bottom:1px solid var(--real-line)}
+.staffP{color:var(--petrol);border-bottom:1px solid var(--teal)}
+.ledger td{padding:4px 4px;border-bottom:1px solid #E7EBEE}
+.ledger td.day{font-size:14px;padding-right:10px;white-space:nowrap}
+.ledger td.day .dnum{color:var(--mute);font-size:12px;margin-left:5px}
+.ledger input{width:100%;min-width:62px;padding:8px 5px;font:inherit;font-size:14px;
+  text-align:center;border:1px solid var(--line);border-radius:3px;background:var(--paper);
+  font-variant-numeric:tabular-nums}
+.ledger input:focus{outline:2px solid var(--teal);outline-offset:1px;border-color:var(--teal)}
+.tot{text-align:center;font-size:14px;font-weight:600;padding:9px 5px;border-radius:3px}
+.totR{background:#F6EEDA;border:1px solid var(--real-line);color:var(--real)}
+.totP{background:var(--teal-soft);border:1px solid var(--teal);color:var(--petrol)}
+.tot.zero{background:#F6F8F9;border:1px dashed var(--line);color:var(--mute);font-weight:400}
+.ledger tfoot td{border-bottom:none;border-top:2px solid var(--petrol);padding-top:10px}
+.ledger tfoot .lbl{font-size:11px;letter-spacing:.05em;text-transform:uppercase;color:var(--mute);
+  font-weight:600}
+.ledger tfoot .num{text-align:center;font-size:14px;font-weight:600;color:var(--petrol)}
+.shortcut{margin:14px 0 0;font-size:12px;color:var(--teal);background:none;border:0;padding:0;
+  cursor:pointer;text-decoration:underline;text-underline-offset:3px;font-family:inherit}
+.shortcut:hover{color:var(--petrol)}
+
+.actions{background:var(--paper);padding:22px 26px}
+.status{display:flex;gap:9px;font-size:13px;padding:11px 13px;border-radius:3px;
+  margin-bottom:16px;border-left:3px solid}
+.status.wait{background:#F6F8F9;border-color:var(--line);color:var(--mute)}
+.status.bad{background:#FBF0ED;border-color:var(--alert);color:var(--alert)}
+.status.good{background:#EDF5F1;border-color:var(--ok);color:var(--ok)}
+.status.sent{background:var(--teal-soft);border-color:var(--teal);color:var(--petrol)}
+.btnrow{display:flex;gap:11px;flex-wrap:wrap;align-items:center}
+button.primary{background:var(--petrol);color:#fff;border:0;border-radius:3px;padding:12px 26px;
+  font:inherit;font-size:14px;font-weight:600;cursor:pointer}
+button.primary:hover:not(:disabled){background:var(--teal)}
+button.primary:disabled{background:var(--line);color:#8A959D;cursor:not-allowed}
+button.ghost{background:none;color:var(--teal);border:1px solid var(--line);border-radius:3px;
+  padding:12px 20px;font:inherit;font-size:14px;cursor:pointer}
+button.ghost:hover{border-color:var(--teal);background:var(--teal-soft)}
+button:focus-visible{outline:2px solid var(--teal);outline-offset:2px}
+.foot{padding:18px 26px 0;font-size:11px;color:var(--mute);line-height:1.6}
+@media (max-width:700px){
+  .block,.masthead,.actions{padding-left:14px;padding-right:14px}
+  .row2{grid-template-columns:1fr}
+  .scroller{margin:0 -14px;padding:0 14px}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<div class="band" role="img" aria-label="Cabecera institucional"></div>
+
+<div class="masthead">
+  <h1>Reporte Proyectado Semanal de Habitabilidad VPP</h1>
+  <p class="sub">Reporte semanal de personal en mina. Un envío por contrato y por semana. Registre lo real y lo proyectado de lunes a domingo.</p>
+</div>
+
+<div class="block">
+  <p class="eyebrow">Contrato</p>
+  <div class="field">
+    <label for="empresa">Empresa <span class="req">*</span></label>
+    <select id="empresa"><option value="">Elija su empresa</option></select>
+  </div>
+  <div class="field">
+    <label for="contrato">Contrato <span class="req">*</span></label>
+    <select id="contrato" disabled><option value="">Elija primero la empresa</option></select>
+    <p class="hint" id="contratoHint">La lista se filtra sola según la empresa elegida.</p>
+  </div>
+  <div class="field">
+    <label for="frente">Frente Adicional</label>
+    <input type="text" id="frente" maxlength="120" placeholder="Escriba el frente adicional, si corresponde">
+    <p class="hint">Campo libre. Déjelo vacío si no aplica.</p>
+  </div>
+  <div class="field">
+    <label>Gerencia</label>
+    <div class="derived empty" id="gerencia">Se completa al elegir el contrato</div>
+  </div>
+  <div class="row2">
+    <div class="field">
+      <label>Operador 1</label>
+      <div class="derived empty" id="oper1">Se completa al elegir el contrato</div>
+    </div>
+    <div class="field">
+      <label>Operador 2</label>
+      <div class="derived empty" id="oper2">Se completa al elegir el contrato</div>
+    </div>
+  </div>
+  <div class="row2">
+    <div class="field">
+      <label for="nombre">Quién reporta <span class="req">*</span></label>
+      <input type="text" id="nombre" autocomplete="name" placeholder="Nombre y apellido">
+    </div>
+    <div class="field">
+      <label for="correo">Correo de contacto <span class="req">*</span></label>
+      <input type="email" id="correo" autocomplete="email" placeholder="nombre@empresa.com">
+    </div>
+  </div>
+</div>
+
+<div class="block">
+  <p class="eyebrow">Personal de la semana</p>
+  <div class="field">
+    <label for="semana">Semana <span class="req">*</span></label>
+    <input type="date" id="semana">
+    <p class="hint" id="semanaHint">Elija cualquier día de la semana; se ajusta al lunes automáticamente.</p>
+  </div>
+
+  <div class="scroller">
+  <table class="ledger" id="ledger">
+    <thead>
+      <tr>
+        <th class="day" rowspan="3">Día</th>
+        <th class="gP" colspan="4">PROYECTADO</th>
+        <th class="gR" colspan="4">REAL</th>
+      </tr>
+      <tr>
+        <th class="inP" rowspan="2">Worker</th>
+        <th class="staffP" colspan="2">Staff</th>
+        <th class="outP" rowspan="2">Total</th>
+        <th class="inR" rowspan="2">Worker</th>
+        <th class="staffR" colspan="2">Staff</th>
+        <th class="outR" rowspan="2">Total</th>
+      </tr>
+      <tr>
+        <th>Admin</th><th>Sup</th>
+        <th>Admin</th><th>Sup</th>
+      </tr>
+    </thead>
+    <tbody id="rows"></tbody>
+    <tfoot>
+      <tr>
+        <td class="lbl">Hombre-día</td>
+        <td class="num inP botP" id="fPW">—</td>
+        <td class="num" id="fPA">—</td>
+        <td class="num" id="fPS">—</td>
+        <td class="num outP botP" id="fPT">—</td>
+        <td class="num inR botR" id="fRW">—</td>
+        <td class="num" id="fRA">—</td>
+        <td class="num" id="fRS">—</td>
+        <td class="num outR botR" id="fRT">—</td>
+      </tr>
+    </tfoot>
+  </table>
+  </div>
+
+  <button type="button" class="shortcut" id="copyDown">Copiar el lunes al resto de la semana</button>
+</div>
+
+<div class="actions">
+  <div class="status wait" id="status"><span>Complete los campos marcados para habilitar el envío.</span></div>
+  <div class="btnrow">
+    <button type="button" class="primary" id="send" disabled>Enviar reporte</button>
+    <button type="button" class="ghost" id="download">Descargar para Excel</button>
+  </div>
+  <p class="foot" id="foot"></p>
+</div>
+
+</div>
+
+<script>
+/* ============================================================
+   CONFIGURACIÓN — pegue aquí la URL del flujo de Power Automate.
+   Vacío = el envío se hace descargando el archivo.
+   ============================================================ */
+const ENDPOINT = "";
+
+const DATOS = [{"e":"ABB S.A.","c":"4000012053","d":"Asistencia Técnica Reemplazo Estator MB3","g":"GER. ENTREGA DE PROYECTOS","o1":"INCISO ARANA , AUGUSTO MERCEDES","o2":"CORONADO TORRES , GABRIEL"},{"e":"AEI S.R.L.","c":"4000011566","d":"MANTENIMIENTO DE 08 BRAZING-MACHINE","g":"GER. INGENIERIA Y CALIDAD","o1":"YAMPASI SUERO , DAVID HUMBERTO","o2":"REYNAGA BULEJE , EDWIN ALFREDO"},{"e":"APC ENGINEERING AND CONSULTING SPA","c":"4000012097","d":"Servicio especializado QA","g":"GER. DE PLANTA CONC Y OEM","o1":"TUERO CABRERA , WILMAN","o2":"INCISO ARANA , AUGUSTO MERCEDES"},{"e":"AUSENCO PERU SRL","c":"4000006616","d":"SUPERV. GESTION CONSTRUCCION","g":"GER. ENTREGA DE PROYECTOS","o1":"PEÑAHERRERA DEZA , ARTURO ENRIQUE","o2":"CONDORI LOPEZ , EDUARDO BASILIO"},{"e":"BISA INGENIERIA DE PROYECTOS SA","c":"4000006296","d":"CONTRATO MARCO DE INGENIERIA","g":"GER. ENTREGA DE PROYECTOS","o1":"PALACIOS AGUILAR , ANGIE GABRIELA","o2":"CONDORI LOPEZ , EDUARDO BASILIO"},{"e":"BUREAU VERITAS DEL PERU S.A.","c":"4000007663","d":"Aseg. de la Construcción (CQA)","g":"GER. INGENIERIA Y CALIDAD","o1":"SUAREZ VILELA , SEGUNDO","o2":"CHAVEZ ALVARADO , IMELDA YOLANDA"},{"e":"CAM SERVICIOS DEL PERU S.A.","c":"4000012139","d":"Construcción Línea 23kV, 220kV y red FO","g":"GER. DE PLANTA CONC Y OEM","o1":"MORENO MORALES , TULIO CESAR","o2":"QUIÑONES TERREROS , FREDDY EDGAR"},{"e":"CAM SERVICIOS DEL PERU S.A.","c":"4000012298","d":"Reubicación de Línea 23kV DC y ED","g":"GER. DE PRESA RELAVES Y OC","o1":"CALDERON VELASQUEZ , FAUSTINO IGNACIO","o2":"SANCHEZ DOMINGUEZ , CESAR AUGUSTO"},{"e":"CONTRATISTA GENERAL TRUJILLO C S. R. L. CGTC S.R.L","c":"4000011304","d":"MANTENIMIENTO SERVICIOS RUTINARIOS","g":"GER. DE PRESA RELAVES Y OC","o1":"VEGA MONTES , JUAN CRISOSTOMO","o2":"TABOADA RODRIGUEZ , RODOLFO ALEJANDRO"},{"e":"CONTRATISTAS GENERALES TRUJILLO S.A CONGETSA","c":"4000011304","d":"Mantenimiento rutinario de los accesos","g":"GER. DE PRESA RELAVES Y OC","o1":"GENERICO ANTAMINA , PARA POSTULANTE","o2":"GUZMAN URRUNAGA , JOSE RICARDO"},{"e":"CUMBRA PERU S.A.","c":"4000011712","d":"EPC TPS PHASE IX Y SISTEMA DE EMERGENCIA","g":"GER. DE PLANTA CONC Y OEM","o1":"RUIZ MONCADA , OSCAR MODESTO","o2":"CORONADO TORRES , GABRIEL"},{"e":"CUMBRA PERU S.A.","c":"4000012164","d":"Reemplazo de Estator molino de Bolas 3","g":"GER. DE PLANTA CONC Y OEM","o1":"TUERO CABRERA , WILMAN","o2":"CORONADO TORRES , GABRIEL"},{"e":"ESTRUCTURAS INDUSTRIALES EGA S.A.C.","c":"4000010596","d":"Facilidades of. Telecom. Sala de Servido","g":"GER. DE PRESA RELAVES Y OC","o1":"CABELLO MIRANDA , ARTURO","o2":"SANCHEZ DOMINGUEZ , CESAR AUGUSTO"},{"e":"GC SOPORTE DIGITAL PERU S.R.L.","c":"4000012316","d":"Servicio de Filmacion","g":"GER. DE PLANTA CONC Y OEM","o1":"CORONADO TORRES , GABRIEL","o2":"ASCENCION UGARTE , OSCAR ANTONIO"},{"e":"GLOBAL MAPPING SAC","c":"4000005767","d":"Contrato Marco de Geomatica","g":"GER. ENTREGA DE PROYECTOS","o1":"MENDOZA VARGAS , CARLOS FRANCISCO","o2":"PEÑAHERRERA DEZA , ARTURO ENRIQUE"},{"e":"GRUPO ELECTRODATA SAC","c":"4000012185","d":"Mtto. Preventivo Rajant y Dispatch","g":"SUP. TELECOMUNICACIONES","o1":"BUSTINZA ESPINOZA , ADOLFO","o2":"ESPINOZA SANCHEZ , MARIO TORIBIO"},{"e":"GRUPO VIVARGO S.A.C.","c":"4000012290","d":"Servicio Alquiler Camiones 30T","g":"GER. DE PLANTA CONC Y OEM","o1":"CORONADO TORRES , GABRIEL","o2":"ASCENCION UGARTE , OSCAR ANTONIO"},{"e":"HLC INGENIERÍA Y CONSTRUCCIÓN S.A.C","c":"4000012494","d":"Rehabilitación Nave Filtros PPL 2da Et.","g":"GER. ENTREGA DE PROYECTOS","o1":"INCISO ARANA , AUGUSTO MERCEDES","o2":"MEZA LEON , JAIME ARTURO"},{"e":"HV CONTRATISTAS SA","c":"4000012467","d":"Construcción Variante Mineroducto","g":"GER. ENTREGA DE PROYECTOS","o1":"VILCARANI MAMANI , HAMER OMAR","o2":"CORONADO TORRES , GABRIEL"},{"e":"INNOMOTICS S.A.C","c":"4000011135","d":"Serv. UpGrade sistema control SAG2","g":"GER. DE PLANTA CONC Y OEM","o1":"ASCENCION UGARTE , OSCAR ANTONIO","o2":"TUERO CABRERA , WILMAN"},{"e":"JJKM CONTRATISTAS Y SERVICIOS GENERALES SA","c":"4000010471","d":"CONS DE ALMACÉN DE DENSÍMETROS NUCLEARES","g":"GER. ENTREGA DE PROYECTOS","o1":"CHAVEZ ALVARADO , IMELDA YOLANDA","o2":"CONDORI LOPEZ , JOHN JAIME"},{"e":"JRC INGENIERIA Y CONSTRUCCION SAC","c":"4000010713","d":"Servicio de Perforación y Voladura","g":"GER. DE PLANTA CONC Y OEM","o1":"VILCARANI MAMANI , HAMER OMAR","o2":"RUIZ MONCADA , OSCAR MODESTO"},{"e":"MACCAFERRI CONSTRUCTION SAC","c":"4000005854","d":"Contrato Marco Proteccion de Taludes","g":"GER. DE PRESA RELAVES Y OC","o1":"GUZMAN URRUNAGA , JOSE RICARDO","o2":"VEGA MONTES , JUAN CRISOSTOMO"},{"e":"MAS ERRAZURIZ DEL PERU S.A.C","c":"4000011211","d":"Fase IX 4180 - Túneles","g":"GER. DE PRESA RELAVES Y OC","o1":"GUZMAN URRUNAGA , JOSE RICARDO","o2":"VEGA MONTES , JUAN CRISOSTOMO"},{"e":"OBRASCON HUARTE LAIN SA SUC. DEL PE PERU S.A.","c":"4000011309","d":"Ejecución TSF Fase IX 4180","g":"GER. DE PRESA RELAVES Y OC","o1":"MANOSALVA HORNA , GEILER SANDRO","o2":"VEGA MONTES , JUAN CRISOSTOMO"},{"e":"OPERACION SERVICIOS Y MODERNIZACION DE PLANTAS SA","c":"4000011453","d":"Desmonataje electromecanico de faja 1","g":"GER. DE PLANTA CONC Y OEM","o1":"RUIZ MONCADA , OSCAR MODESTO","o2":"CORONADO TORRES , GABRIEL"},{"e":"RSC MULTISERVICIOS SAC","c":"4000010952","d":"Servicio de controles ambientales","g":"GER. DE PRESA RELAVES Y OC","o1":"GUZMAN URRUNAGA , JOSE RICARDO","o2":"MANOSALVA HORNA , GEILER SANDRO"},{"e":"RSC MULTISERVICIOS SAC","c":"4000012192","d":"Mantenimiento rutinario de los accesos","g":"GER. DE PRESA RELAVES Y OC","o1":"GUZMAN URRUNAGA , JOSE RICARDO","o2":"VEGA MONTES , JUAN CRISOSTOMO"},{"e":"STIERLIFT S.A.","c":"4000012464","d":"Serv. de alquiler de grúas y modulares","g":"GER. ENTREGA DE PROYECTOS","o1":"CORONADO TORRES , GABRIEL","o2":"RUIZ MONCADA , OSCAR MODESTO"},{"e":"STRACON PERU S.A.","c":"4000006385","d":"Crecimiento presa de relaves Fase VIII","g":"GER. DE PRESA RELAVES Y OC","o1":"GUZMAN URRUNAGA , JOSE RICARDO","o2":"MANOSALVA HORNA , GEILER SANDRO"},{"e":"STRACON PERU S.A.","c":"4000010616","d":"Manejo de Filtraciones PPD","g":"GER. DE PRESA RELAVES Y OC","o1":"MIO SERRATO , ERNESTO","o2":"MANOSALVA HORNA , GEILER SANDRO"},{"e":"STRACON PERU S.A.","c":"4000010635","d":"Extensión Linea Nescafe Agua Fresca","g":"GER. DE PRESA RELAVES Y OC","o1":"LLANOS CHUNQUI , JHIMMY EDGARDO","o2":"SANCHEZ DOMINGUEZ , CESAR AUGUSTO"},{"e":"STRACON PERU S.A.","c":"4000010716","d":"EPC-OM Planta Piloto","g":"GER. DE PLANTA CONC Y OEM","o1":"CASO LLOCLLA , AMARO ANDRES","o2":"NINA TORRES , MAURO OSWALDO"},{"e":"STRACON PERU S.A.","c":"4000012158","d":"REFORZAMIENTO DE TALUDES EN ACCESO AYASH","g":"GER. DE PRESA RELAVES Y OC","o1":"GUZMAN URRUNAGA , JOSE RICARDO","o2":"VEGA MONTES , JUAN CRISOSTOMO"},{"e":"STRACON PERU S.A.","c":"4000012171","d":"Construcción TUSEF fase 2","g":"GER. DE PRESA RELAVES Y OC","o1":"GUZMAN URRUNAGA , JOSE RICARDO","o2":"VEGA MONTES , JUAN CRISOSTOMO"},{"e":"TECNO FAST S.A.C.","c":"4000012303","d":"Inst. cerco zonas críticas","g":"GER. ENTREGA DE PROYECTOS","o1":"SANCHEZ DOMINGUEZ , CESAR AUGUSTO","o2":"CALDERON VELASQUEZ , FAUSTINO IGNACIO"},{"e":"TRANSBAT CONTRATISTAS GENERALES SRL","c":"MTE03422","d":"PRODUCCION DE AGREGADOS 2B, 3A y VARIOS","g":"GER. DE PRESA RELAVES Y OC","o1":"ZARATE PORTILLA , JHONATAN ISRAEL","o2":"CABELLO MIRANDA , ARTURO"},{"e":"UNION DE CONCRETERAS S A","c":"4000007883","d":"CLID-Suministro y Producción de Concreto","g":"GER. DE PRESA RELAVES Y OC","o1":"ZARATE PORTILLA , JHONATAN ISRAEL","o2":"LLANOS BARRAGAN , GILBERT ALFONSO"},{"e":"UNION DE CONCRETERAS S A","c":"MTE04317","d":"PRODUCCION AGREGADOS FASE 6B PRESA RELAV","g":"GER. DE PRESA RELAVES Y OC","o1":"ZARATE PORTILLA , JHONATAN ISRAEL","o2":"RODRIGUEZ SILES , ALFREDO RENATO"},{"e":"WSP PERU S.A.","c":"4000012163","d":"Aseguramiento de la calidad CQA","g":"GER. INGENIERIA Y CALIDAD","o1":"SUAREZ VILELA , SEGUNDO","o2":"CHAVEZ ALVARADO , IMELDA YOLANDA"},{"e":"WSP PERU S.A.","c":"MTE00420","d":"SERV. CQA. ING.ING REGISTRO PRESA2020-25","g":"GER. INGENIERIA Y CALIDAD","o1":"CHAVEZ ALVARADO , IMELDA YOLANDA","o2":"CARIAPAZA NAYHUA , OSCAR MARTIN"}];
+
+const DIAS    = ["LUNES","MARTES","MIERCOLES","JUEVES","VIERNES","SABADO","DOMINGO"];
+const DIAS_ES = ["Lunes","Martes","Miércoles","Jueves","Viernes","Sábado","Domingo"];
+/* prefijo de grupo: r = REAL, p = PROYECTADO */
+const GRUPOS  = [{k:"p", et:"PROYECTADO"}, {k:"r", et:"REAL"}];
+const PARTES  = ["Worker","Admin","Sup"];
+
+const $ = id => document.getElementById(id);
+const empresaSel = $("empresa"), contratoSel = $("contrato");
+const DERIV = {g:$("gerencia"), o1:$("oper1"), o2:$("oper2")};
+const VACIO = "Se completa al elegir el contrato";
+function limpiarDeriv(){ Object.values(DERIV).forEach(b => { b.textContent = VACIO; b.className = "derived empty"; }); }
+const semanaInp = $("semana"), statusBox = $("status"), sendBtn = $("send");
+
+[...new Set(DATOS.map(d => d.e))].sort((a,b)=>a.localeCompare(b,"es"))
+  .forEach(e => empresaSel.add(new Option(e, e)));
+
+/* --- cascada empresa -> contrato -> gerencia y operadores --- */
+empresaSel.addEventListener("change", () => {
+  const emp = empresaSel.value;
+  contratoSel.innerHTML = "";
+  limpiarDeriv();
+  if (!emp){
+    contratoSel.add(new Option("Elija primero la empresa",""));
+    contratoSel.disabled = true;
+    $("contratoHint").textContent = "La lista se filtra sola según la empresa elegida.";
+  } else {
+    const mios = DATOS.filter(d => d.e === emp).sort((a,b)=>a.c.localeCompare(b.c));
+    contratoSel.add(new Option(mios.length === 1 ? "—" : "Elija el contrato",""));
+    mios.forEach(m => contratoSel.add(new Option(m.c + " — " + m.d, m.c)));
+    contratoSel.disabled = false;
+    $("contratoHint").textContent = mios.length === 1
+      ? "Esta empresa tiene un solo contrato vigente."
+      : "Esta empresa tiene " + mios.length + " contratos vigentes.";
+    if (mios.length === 1){ contratoSel.value = mios[0].c; contratoSel.dispatchEvent(new Event("change")); }
+  }
+  validar();
+});
+
+contratoSel.addEventListener("change", () => {
+  /* clave empresa + contrato: hay numeros de contrato repetidos entre empresas */
+  const hit = DATOS.find(d => d.e === empresaSel.value && d.c === contratoSel.value);
+  if (hit){
+    DERIV.g.textContent  = hit.g;
+    DERIV.o1.textContent = hit.o1;
+    DERIV.o2.textContent = hit.o2;
+    Object.values(DERIV).forEach(b => b.className = "derived");
+  } else limpiarDeriv();
+  validar();
+});
+
+/* --- filas --- */
+const rowsEl = $("rows");
+DIAS.forEach((d,i) => {
+  const tr = document.createElement("tr");
+  let html = '<td class="day">' + DIAS_ES[i] + '<span class="dnum" id="f'+i+'"></span></td>';
+  GRUPOS.forEach(g => {
+    const cls = g.k === "r" ? ["inR","outR"] : ["inP","outP"];
+    html += '<td class="'+cls[0]+'"><input type="number" min="0" max="5000" step="1" id="'+g.k+'w'+i+'" inputmode="numeric" aria-label="'+DIAS_ES[i]+' '+g.et+' Worker"></td>';
+    html += '<td><input type="number" min="0" max="5000" step="1" id="'+g.k+'a'+i+'" inputmode="numeric" aria-label="'+DIAS_ES[i]+' '+g.et+' Admin"></td>';
+    html += '<td><input type="number" min="0" max="5000" step="1" id="'+g.k+'s'+i+'" inputmode="numeric" aria-label="'+DIAS_ES[i]+' '+g.et+' Sup"></td>';
+    html += '<td class="'+cls[1]+'"><div class="tot zero" id="'+g.k+'t'+i+'">—</div></td>';
+  });
+  tr.innerHTML = html;
+  rowsEl.appendChild(tr);
+});
+/* cierre inferior de los marcos */
+[...rowsEl.rows[6].cells].forEach((c,ix) => {
+  if ([1,4].includes(ix)) c.classList.add("botP");
+  if ([5,8].includes(ix)) c.classList.add("botR");
+});
+
+/* --- fecha --- */
+function lunesDe(str){
+  const p = str.split("-"); const d = new Date(+p[0], +p[1]-1, +p[2]);
+  d.setDate(d.getDate() - ((d.getDay()+6)%7)); return d;
+}
+const fmt = d => String(d.getDate()).padStart(2,"0")+"/"+String(d.getMonth()+1).padStart(2,"0");
+const iso = d => d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
+
+semanaInp.addEventListener("change", () => {
+  if (!semanaInp.value){ DIAS.forEach((_,i)=> $("f"+i).textContent=""); validar(); return; }
+  const l = lunesDe(semanaInp.value);
+  const ajustado = iso(l) !== semanaInp.value;
+  semanaInp.value = iso(l);
+  DIAS.forEach((_,i) => { const d = new Date(l); d.setDate(l.getDate()+i); $("f"+i).textContent = fmt(d); });
+  $("semanaHint").textContent = ajustado
+    ? "Ajustado al lunes " + fmt(l) + ", inicio de esa semana."
+    : "Semana del lunes " + fmt(l) + " al domingo.";
+  validar();
+});
+
+/* --- totales --- */
+function recalcular(){
+  const suma = {r:[0,0,0,0], p:[0,0,0,0]};
+  let completos = 0;
+  DIAS.forEach((_,i) => {
+    GRUPOS.forEach(g => {
+      const v = PARTES.map((_,k) => $(g.k + "was"[0] + i)); // placeholder
+    });
+  });
+  DIAS.forEach((_,i) => {
+    GRUPOS.forEach(g => {
+      const w = $(g.k+"w"+i).value, a = $(g.k+"a"+i).value, s = $(g.k+"s"+i).value;
+      const box = $(g.k+"t"+i);
+      if (w==="" && a==="" && s===""){ box.textContent="—"; box.className="tot zero"; return; }
+      const t = (+w||0)+(+a||0)+(+s||0);
+      box.textContent = t;
+      box.className = "tot " + (g.k==="r" ? "totR" : "totP");
+      if (w!=="" && a!=="" && s!=="") completos++;
+      const acc = suma[g.k];
+      acc[0]+=(+w||0); acc[1]+=(+a||0); acc[2]+=(+s||0); acc[3]+=t;
+    });
+  });
+  const pon = (id,v) => $(id).textContent = completos ? v.toLocaleString("es-PE") : "—";
+  pon("fRW",suma.r[0]); pon("fRA",suma.r[1]); pon("fRS",suma.r[2]); pon("fRT",suma.r[3]);
+  pon("fPW",suma.p[0]); pon("fPA",suma.p[1]); pon("fPS",suma.p[2]); pon("fPT",suma.p[3]);
+  return suma;
+}
+DIAS.forEach((_,i) => GRUPOS.forEach(g => ["w","a","s"].forEach(p =>
+  $(g.k+p+i).addEventListener("input", () => { recalcular(); validar(); }))));
+
+$("copyDown").addEventListener("click", () => {
+  const vacio = GRUPOS.every(g => ["w","a","s"].every(p => $(g.k+p+"0").value === ""));
+  if (vacio){ semaforo("bad","Escriba primero las cifras del lunes."); return; }
+  for (let i=1;i<7;i++)
+    GRUPOS.forEach(g => ["w","a","s"].forEach(p => { $(g.k+p+i).value = $(g.k+p+"0").value; }));
+  recalcular(); validar();
+});
+
+["nombre","correo"].forEach(id => $(id).addEventListener("input", validar));
+
+/* --- validación --- */
+function semaforo(tipo, texto){
+  statusBox.className = "status " + tipo;
+  statusBox.innerHTML = "<span>" + texto + "</span>";
+}
+function faltantes(){
+  const f = [];
+  if (!empresaSel.value) f.push("empresa");
+  if (!contratoSel.value) f.push("contrato");
+  if (!$("nombre").value.trim()) f.push("quién reporta");
+  const c = $("correo").value.trim();
+  if (!c || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(c)) f.push("correo válido");
+  if (!semanaInp.value) f.push("semana");
+  let huecos = 0;
+  DIAS.forEach((_,i) => GRUPOS.forEach(g => ["w","a","s"].forEach(p => {
+    if ($(g.k+p+i).value === "") huecos++;
+  })));
+  if (huecos) f.push(huecos === 42 ? "las cifras de la semana" : huecos + " casilla(s) de la tabla");
+  return f;
+}
+function validar(){
+  const suma = recalcular();
+  const f = faltantes();
+  if (f.length){ sendBtn.disabled = true; semaforo("wait","Falta " + f.join(", ") + "."); }
+  else {
+    sendBtn.disabled = false;
+    semaforo("good","Listo para enviar. Proyectado: " + suma.p[3].toLocaleString("es-PE")
+      + " hombre-día · Real: " + suma.r[3].toLocaleString("es-PE") + " hombre-día.");
+  }
+  return f.length === 0;
+}
+
+/* --- registro --- */
+function registro(){
+  const cab = ["Id","Hora de inicio","Hora de finalización","Correo electrónico","Nombre",
+               "EMPRESA","CONTRATO","DESCRIPCION","FRENTE ADICIONAL","GERENCIA",
+               "OPERADOR 1","OPERADOR 2","SEMANA (LUNES)"];
+  DIAS.forEach(d => GRUPOS.forEach(g =>
+    ["Worker","Admin","Sup","Total"].forEach(p => cab.push(d + " - " + g.et + " " + p))));
+  const ahora = new Date().toLocaleString("es-PE");
+  const l = lunesDe(semanaInp.value);
+  const hit = DATOS.find(d => d.e === empresaSel.value && d.c === contratoSel.value) || {};
+  const val = ["WEB-"+Date.now(), ahora, ahora, $("correo").value.trim(), $("nombre").value.trim(),
+               empresaSel.value, contratoSel.value, hit.d || "", $("frente").value.trim(),
+               hit.g || "", hit.o1 || "", hit.o2 || "", fmt(l)+"/"+l.getFullYear()];
+  DIAS.forEach((_,i) => GRUPOS.forEach(g => {
+    const w = +$(g.k+"w"+i).value, a = +$(g.k+"a"+i).value, s = +$(g.k+"s"+i).value;
+    val.push(w, a, s, w+a+s);
+  }));
+  return {cab, val};
+}
+
+$("download").addEventListener("click", () => {
+  if (!validar()) return;
+  const {cab, val} = registro();
+  const esc = v => '"' + String(v).replace(/"/g,'""') + '"';
+  const csv = "\uFEFF" + cab.map(esc).join(";") + "\r\n" + val.map(esc).join(";") + "\r\n";
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(new Blob([csv], {type:"text/csv;charset=utf-8;"}));
+  a.download = "habitabilidad_" + empresaSel.value.replace(/[^A-Za-z0-9]+/g,"_").slice(0,24)
+             + "_" + iso(lunesDe(semanaInp.value)) + ".csv";
+  a.click(); URL.revokeObjectURL(a.href);
+  semaforo("sent","Archivo descargado. Ábralo con Excel o péguelo en la hoja RESPUESTAS_FORMS del consolidador.");
+});
+
+$("send").addEventListener("click", async () => {
+  if (!validar()) return;
+  if (!ENDPOINT){ semaforo("bad","No hay destino configurado. Use “Descargar para Excel”."); return; }
+  const {cab, val} = registro();
+  const cuerpo = {}; cab.forEach((k,i)=> cuerpo[k]=val[i]);
+  sendBtn.disabled = true; semaforo("wait","Enviando…");
+  try{
+    /* text/plain evita el preflight CORS que Power Automate no responde.
+       En el flujo, use Parse JSON con la expresion json(triggerBody()). */
+    const r = await fetch(ENDPOINT, {method:"POST",
+      headers:{"Content-Type":"text/plain;charset=UTF-8"}, body:JSON.stringify(cuerpo)});
+    if (!r.ok) throw new Error("HTTP " + r.status);
+    semaforo("sent","Reporte enviado. Ya figura en el Excel del área.");
+  }catch(err){
+    sendBtn.disabled = false;
+    semaforo("bad","No se pudo enviar (" + err.message + "). Use “Descargar para Excel”.");
+  }
+});
+
+$("foot").textContent = "Cada Total se calcula solo: Worker + Admin + Sup, por separado para Proyectado y Real.";
+recalcular();
+</script>
+</body>
+</html>
