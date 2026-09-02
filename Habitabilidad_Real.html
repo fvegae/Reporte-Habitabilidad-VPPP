@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Registro diario de habitabilidad VPP</title>
+<style>
+:root{--petrol:#0e3f4f;--teal:#1f6f84;--soft:#e4eff2;--paper:#fff;--bg:#f1f1f4;--line:#c9d1d7;--ink:#1c2429;--mute:#63707a;--bad:#a3341f;--ok:#1e6b4f}
+*{box-sizing:border-box} body{margin:0;background:var(--bg);color:var(--ink);font:13px/1.5 "Segoe UI",system-ui,sans-serif}
+.wrap{max-width:820px;margin:30px auto;background:var(--paper);box-shadow:0 2px 10px #0e3f4f1a}
+header{padding:24px 28px;background:var(--petrol);color:white} h1{margin:0;font-size:21px} header p{margin:6px 0 0;color:#dce9ed}
+main{padding:26px 28px}.grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}.field{margin-bottom:17px}.wide{grid-column:1/-1}
+label{display:block;font-size:12px;font-weight:700;margin-bottom:5px}.req{color:#c74630}
+select,input{width:100%;padding:10px 11px;border:1px solid var(--line);border-radius:4px;background:white;color:var(--ink);font:inherit}
+select:focus,input:focus{outline:2px solid var(--teal);outline-offset:1px}select:disabled{background:#f5f6f7;color:var(--mute)}
+input[readonly]{background:#f5f6f7;color:var(--mute);cursor:not-allowed}
+.quantities{display:grid;grid-template-columns:1fr 1fr 1fr .44fr;grid-template-rows:25px 30px 48px;column-gap:8px;row-gap:0;margin:5px 0 20px}
+.qtitle{align-self:start;text-align:center;color:#40505a;font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase}
+.worker-title{grid-column:1;grid-row:1/3}.staff-title{grid-column:2/4;grid-row:1;border-bottom:1px solid #d9c48a;padding-bottom:5px}.total-title{grid-column:4;grid-row:1/3}.admin-title{grid-column:2;grid-row:2;padding-top:6px}.super-title{grid-column:3;grid-row:2;padding-top:6px}
+.quantities input{text-align:center;font-size:18px;height:40px}.worker-input{grid-column:1;grid-row:3}.admin-input{grid-column:2;grid-row:3}.super-input{grid-column:3;grid-row:3}
+.total{grid-column:4;grid-row:3;height:40px;padding:8px;text-align:center;font-size:16px;font-weight:600;background:#f6f8f9;border:1px dashed var(--line);border-radius:4px;color:var(--mute)}
+.status{display:none;padding:11px 13px;border-left:4px solid;border-radius:3px;margin-bottom:16px}.status.show{display:block}.status.wait{background:#f5f6f7;border-color:var(--line);color:var(--mute)}.status.bad{background:#fbf0ed;border-color:var(--bad);color:var(--bad)}.status.good{background:#edf5f1;border-color:var(--ok);color:var(--ok)}
+button{width:100%;padding:13px;border:0;border-radius:4px;background:var(--petrol);color:white;font:600 15px inherit;cursor:pointer}button:hover:not(:disabled){color:white;background:var(--teal)}button:disabled{background:var(--line);cursor:not-allowed}.buttonrow{display:flex;gap:10px}.buttonrow button:first-child{width:auto}.buttonrow button:last-child{flex:1}.secondary{background:white;color:var(--teal);border:1px solid var(--line)}
+.note{margin:14px 0 0;color:var(--mute);font-size:12px}@media(max-width:650px){.wrap{margin:0}.grid{grid-template-columns:1fr}.wide{grid-column:auto}main,header{padding-left:16px;padding-right:16px}.quantities{grid-template-columns:1fr 1fr 1fr .55fr;column-gap:5px}.qtitle{font-size:9px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header><h1>Registro diario de habitabilidad VPP</h1><p>Registre la cantidad real de personal en mina por contrato y fecha.</p></header>
+<main>
+  <div class="grid">
+    <div class="field"><label for="empresa">Empresa <span class="req">*</span></label><select id="empresa"><option value="">Elija su empresa</option></select></div>
+    <div class="field"><label for="contrato">Contrato <span class="req">*</span></label><select id="contrato" disabled><option value="">Elija primero la empresa</option></select></div>
+    <div class="field"><label for="fechaInicioContrato">Fecha de inicio del contrato</label><input id="fechaInicioContrato" type="date" readonly aria-readonly="true"></div>
+    <div class="field"><label for="fechaFinContrato">Fecha de fin del contrato</label><input id="fechaFinContrato" type="date" readonly aria-readonly="true"></div>
+    <div class="field"><label for="nombre">Quién reporta</label><input id="nombre" type="text" readonly aria-readonly="true"></div>
+    <div class="field"><label for="correo">Correo de contacto</label><input id="correo" type="email" readonly aria-readonly="true"></div>
+    <div class="field wide"><label for="fecha">Fecha del registro <span class="req">*</span></label><input id="fecha" type="date"><p class="note">Puede registrar el día actual o una fecha anterior. No se permiten fechas futuras.</p></div>
+  </div>
+  <div class="quantities">
+    <label class="qtitle worker-title" for="worker">Worker</label>
+    <div class="qtitle staff-title">Staff</div>
+    <div class="qtitle total-title">Total</div>
+    <label class="qtitle admin-title" for="admin">Admin</label>
+    <label class="qtitle super-title" for="super">Sup</label>
+    <input class="worker-input" id="worker" aria-label="Worker" type="number" min="0" max="5000" step="1" inputmode="numeric" value="0">
+    <input class="admin-input" id="admin" aria-label="Staff Admin" type="number" min="0" max="5000" step="1" inputmode="numeric" value="0">
+    <input class="super-input" id="super" aria-label="Staff Supervisor" type="number" min="0" max="5000" step="1" inputmode="numeric" value="0">
+    <div class="total" id="total" aria-label="Total real">0</div>
+  </div>
+  <div class="status" id="status" role="status" aria-live="polite"></div>
+  <div class="buttonrow"><button class="secondary" type="button" id="volverMenu">Volver al menú</button><button type="button" id="enviar" disabled>Enviar registro</button></div>
+ 
+</main>
+</div>
+<script>
+const SUPABASE_URL = "https://nrvlmnyrwvjhfadvyuvq.supabase.co";
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5ydmxtbnlyd3ZqaGZhZHZ5dXZxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTkyMzM0MDcsImV4cCI6MjA3NDgwOTQwN30.9CLJzGIh19GzSjT7XxZAu9fahO_f263R-Hn6lKPzbZ8";
+
+const TABLA = "Habitabilidad";
+const PAGINA_LOGIN = "Habitabilidad_Login.html";
+const $ = id => document.getElementById(id);
+const empresa = $("empresa"), contrato = $("contrato"), fechaInicioContrato = $("fechaInicioContrato"), fechaFinContrato = $("fechaFinContrato"), nombre = $("nombre"), correo = $("correo"), fecha = $("fecha");
+const worker = $("worker"), admin = $("admin"), superv = $("super"), boton = $("enviar"), status = $("status");
+let CONTRATOS_DISPONIBLES = [];
+
+function obtenerUsuario() {
+  try { return JSON.parse(sessionStorage.getItem("habitabilidad_usuario")); }
+  catch { return null; }
+}
+const USUARIO = obtenerUsuario() || {};
+if (!USUARIO?.CodCia || !USUARIO?.Correo || !USUARIO?.Nombre) window.location.replace(PAGINA_LOGIN);
+nombre.value = USUARIO.Nombre || "";
+correo.value = USUARIO.Correo || "";
+
+function configuracionCompleta() {
+  return !SUPABASE_URL.includes("TU-PROYECTO") && !SUPABASE_ANON_KEY.includes("TU-CLAVE");
+}
+
+async function consultarCatalogo(tabla, parametros) {
+  const url = SUPABASE_URL.replace(/\/$/, "") + "/rest/v1/" + tabla + "?" + parametros;
+  const respuesta = await fetch(url, {
+    headers: {
+      apikey: SUPABASE_ANON_KEY,
+      Authorization: "Bearer " + SUPABASE_ANON_KEY
+    }
+  });
+  const resultado = await respuesta.json().catch(() => null);
+  if (!respuesta.ok) throw new Error(resultado?.message || resultado?.details || "HTTP " + respuesta.status);
+  return resultado;
+}
+
+async function cargarEmpresas() {
+  empresa.disabled = true;
+  empresa.innerHTML = "";
+  empresa.add(new Option("Cargando empresa…", ""));
+  if (!configuracionCompleta()) {
+    empresa.innerHTML = "";
+    empresa.add(new Option("Configure la conexión con Supabase", ""));
+    mostrar("bad", "Configure SUPABASE_URL y SUPABASE_ANON_KEY en el HTML.");
+    return;
+  }
+  try {
+    const empresas = await consultarCatalogo("Habitabilidad_Empresas", "select=CodCia,Descripcion&CodCia=eq." + encodeURIComponent(USUARIO.CodCia) + "&limit=1");
+    empresa.innerHTML = "";
+    empresas.forEach(x => empresa.add(new Option(x.Descripcion, x.CodCia)));
+    empresa.disabled = true;
+    if (!empresas.length) mostrar("bad", "No se encontró la empresa asignada al usuario.");
+    else await cargarContratos();
+  } catch (error) {
+    empresa.innerHTML = "";
+    empresa.add(new Option("No se pudieron cargar las empresas", ""));
+    mostrar("bad", "Error al consultar empresas: " + error.message);
+  }
+  validar();
+}
+
+async function cargarContratos() {
+  contrato.disabled = true;
+  contrato.innerHTML = "";
+  if (!empresa.value) {
+    contrato.add(new Option("Elija primero la empresa", ""));
+    validar();
+    return;
+  }
+  contrato.add(new Option("Cargando contratos…", ""));
+  try {
+    const filtro = "select=NroContrato,Descripcion,Dotacion,FechaInicio,FechaFin&CodCia=eq." + encodeURIComponent(empresa.value) + "&Dotacion=eq.1&FechaFin=gte." + fechaLocalActual() + "&order=NroContrato.asc";
+    CONTRATOS_DISPONIBLES = await consultarCatalogo("Habitabilidad_Contratos", filtro);
+    mostrarContratosVigentes();
+  } catch (error) {
+    CONTRATOS_DISPONIBLES = [];
+    contrato.innerHTML = "";
+    contrato.add(new Option("No se pudieron cargar los contratos", ""));
+    mostrar("bad", "Error al consultar contratos: " + error.message);
+  }
+  actualizarVigenciaContrato();
+}
+
+function mostrarContratosVigentes() {
+  const seleccionado = contrato.value;
+  const fechaSeleccionada = fecha.value;
+  const contratos = CONTRATOS_DISPONIBLES.filter(x => x.FechaInicio && x.FechaFin && x.FechaFin >= fechaLocalActual() && fechaSeleccionada && fechaSeleccionada >= x.FechaInicio && fechaSeleccionada <= x.FechaFin);
+  contrato.innerHTML = "";
+  contrato.add(new Option("Elija el contrato", ""));
+  contratos.forEach(x => {
+      const estadoDotacion = Number(x.Dotacion) === 1 ? "Con dotación" : "Sin dotación";
+      const opcion = new Option(x.NroContrato + " — " + x.Descripcion + " — " + estadoDotacion, x.NroContrato);
+      opcion.dataset.dotacion = String(x.Dotacion);
+      opcion.dataset.fechaInicio = x.FechaInicio || "";
+      opcion.dataset.fechaFin = x.FechaFin || "";
+      contrato.add(opcion);
+  });
+  contrato.disabled = false;
+  if (contratos.some(x => String(x.NroContrato) === seleccionado)) contrato.value = seleccionado;
+  else if (contratos.length === 1) contrato.value = contratos[0].NroContrato;
+  if (!contratos.length && fechaSeleccionada) mostrar("bad", "No existen contratos con dotación vigentes para la fecha seleccionada.");
+  actualizarVigenciaContrato();
+}
+
+empresa.addEventListener("change", cargarContratos);
+contrato.addEventListener("change", actualizarVigenciaContrato);
+fecha.addEventListener("change", mostrarContratosVigentes);
+
+function actualizarVigenciaContrato() {
+  const opcion = contrato.options[contrato.selectedIndex];
+  fechaInicioContrato.value = opcion?.dataset.fechaInicio || "";
+  fechaFinContrato.value = opcion?.dataset.fechaFin || "";
+  fecha.min = fechaInicioContrato.value;
+  fecha.max = fechaFinContrato.value && fechaFinContrato.value < fechaLocalActual() ? fechaFinContrato.value : fechaLocalActual();
+  validar();
+}
+
+function numeroValido(campo) { return campo.value !== "" && campo.checkValidity() && Number.isInteger(Number(campo.value)); }
+function fechaLocalActual() {
+  const hoy = new Date();
+  return hoy.getFullYear() + "-" + String(hoy.getMonth() + 1).padStart(2,"0") + "-" + String(hoy.getDate()).padStart(2,"0");
+}
+function validar() {
+  const vigenciaCompleta = fechaInicioContrato.value !== "" && fechaFinContrato.value !== "";
+  const fechaValida = fecha.value !== "" && fecha.value <= fechaLocalActual() && vigenciaCompleta && fecha.value >= fechaInicioContrato.value && fecha.value <= fechaFinContrato.value;
+  const usuarioValido = nombre.value !== "" && correo.value !== "";
+  boton.disabled = !(empresa.value && contrato.value && usuarioValido && fechaValida && numeroValido(worker) && numeroValido(admin) && numeroValido(superv));
+  $("total").textContent = [worker,admin,superv].reduce((s,x) => s + (Number(x.value) || 0), 0).toLocaleString("es-PE");
+}
+[fecha,worker,admin,superv].forEach(x => x.addEventListener("input", validar));
+
+function fechaAAAAMMDD(valor) { return valor.replaceAll("-", ""); }
+function mostrar(tipo, texto) { status.className = "status show " + tipo; status.textContent = texto; }
+
+function construirRegistros() {
+  const base = {
+    Contrato: contrato.value,
+    Fecha: fechaAAAAMMDD(fecha.value),
+    UsuarioActualizacion: USUARIO.Correo
+  };
+  return [
+    {...base, Tipo:"WORKER", CantidadReal:Number(worker.value)},
+    {...base, Tipo:"ADMIN", CantidadReal:Number(admin.value)},
+    {...base, Tipo:"SUPER", CantidadReal:Number(superv.value)}
+  ];
+}
+
+async function enviar() {
+  validar(); if (boton.disabled) return;
+  if (!fecha.value || fecha.value > fechaLocalActual()) { mostrar("bad", "No se permite registrar información con una fecha futura."); return; }
+  if (!fechaInicioContrato.value || !fechaFinContrato.value || fecha.value < fechaInicioContrato.value || fecha.value > fechaFinContrato.value) { mostrar("bad", "La fecha del registro debe estar dentro de la vigencia del contrato."); return; }
+  if (SUPABASE_URL.includes("TU-PROYECTO") || SUPABASE_ANON_KEY.includes("TU-CLAVE")) { mostrar("bad", "Configure SUPABASE_URL y SUPABASE_ANON_KEY en el HTML."); return; }
+  boton.disabled = true; mostrar("wait", "Enviando información");
+  try {
+    const url = SUPABASE_URL.replace(/\/$/, "") + "/rest/v1/" + encodeURIComponent(TABLA) + "?on_conflict=Contrato,Fecha,Tipo";
+    const respuesta = await fetch(url, {method:"POST", headers:{apikey:SUPABASE_ANON_KEY, Authorization:"Bearer " + SUPABASE_ANON_KEY, "Content-Type":"application/json", Prefer:"resolution=merge-duplicates,return=representation"}, body:JSON.stringify(construirRegistros())});
+    const resultado = await respuesta.json().catch(() => null);
+    if (!respuesta.ok) throw new Error(resultado?.message || resultado?.details || "HTTP " + respuesta.status);
+    mostrar("good", "Registro guardado correctamente para la fecha: " + fecha.value + " con el contrato: " + contrato.value);
+  } catch (error) { mostrar("bad", "No se pudo guardar: " + error.message); }
+  finally { validar(); }
+}
+boton.addEventListener("click", enviar);
+$("volverMenu").addEventListener("click", () => window.location.href = PAGINA_LOGIN);
+fecha.value = fechaLocalActual();
+fecha.max = fecha.value;
+cargarEmpresas();
+validar();
+</script>
+</body>
+</html>
