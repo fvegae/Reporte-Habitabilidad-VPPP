@@ -3,6 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="referrer" content="no-referrer">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; connect-src https://nrvlmnyrwvjhfadvyuvq.supabase.co; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; object-src 'none'; base-uri 'none'; form-action 'self';">
 <title>Acceso a Habitabilidad VPP</title>
 <style>
 :root{--petrol:#0e3f4f;--teal:#1f6f84;--soft:#e4eff2;--paper:#fff;--bg:#f1f1f4;--line:#c9d1d7;--ink:#1c2429;--mute:#63707a;--bad:#a3341f}
@@ -12,7 +14,7 @@ header{padding:25px 28px;background:var(--petrol);color:white}h1{margin:0;font-s
 main{padding:28px}label{display:block;font-size:12px;font-weight:700;margin-bottom:6px}input{width:100%;padding:11px;border:1px solid var(--line);border-radius:4px;font:inherit}input:focus{outline:2px solid var(--teal);outline-offset:1px}
 button{width:100%;margin-top:18px;padding:12px;border:0;border-radius:4px;background:var(--petrol);color:white;font:600 15px inherit;cursor:pointer}button:hover:not(:disabled){color:white;background:var(--teal)}button:disabled{background:var(--line);cursor:not-allowed}
 .menu[hidden],form[hidden]{display:none}.welcome{margin:0 0 16px;color:var(--petrol);font-weight:600}.choices{display:grid;gap:12px}.choice{display:block;padding:16px;border:1px solid var(--line);border-radius:5px;color:var(--petrol);text-decoration:none;background:#f7fafb}.choice:hover{border-color:var(--teal);background:var(--soft)}.choice strong{display:block;font-size:15px}.choice span{display:block;margin-top:3px;color:var(--mute);font-size:12px}.change{margin-top:16px;background:white;color:var(--teal);border:1px solid var(--line)}
-.hint{font-size:12px;color:var(--mute);margin:6px 0 0}.status{display:none;margin-top:15px;padding:10px 12px;border-left:4px solid;border-radius:3px}.status.show{display:block}.status.wait{background:#f5f6f7;border-color:var(--line);color:var(--mute)}.status.bad{background:#fbf0ed;border-color:var(--bad);color:var(--bad)}
+.hint{font-size:12px;color:var(--mute);margin:6px 0 0}.status{display:none;margin-top:15px;padding:10px 12px;border-left:4px solid;border-radius:3px}.status.show{display:block}.status.wait{background:#f5f6f7;border-color:var(--line);color:var(--mute)}.status.bad{background:#fbf0ed;border-color:var(--bad);color:var(--bad)}.security-note{margin:18px 0 0;padding:9px 11px;border-left:3px solid var(--teal);background:var(--soft);color:var(--petrol);font-size:11px}
 </style>
 </head>
 <body>
@@ -35,12 +37,15 @@ button{width:100%;margin-top:18px;padding:12px;border:0;border-radius:4px;backgr
       </div>
       <button class="change" id="cambiar" type="button">Ingresar con otro correo</button>
     </section>
+    <p class="security-note">Sistema de uso exclusivo de Antamina. La sesión se cerrará después de 30 minutos de inactividad.</p>
   </main>
 </div>
 <script>
 const SUPABASE_URL = "https://nrvlmnyrwvjhfadvyuvq.supabase.co";
 const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5ydmxtbnlyd3ZqaGZhZHZ5dXZxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTkyMzM0MDcsImV4cCI6MjA3NDgwOTQwN30.9CLJzGIh19GzSjT7XxZAu9fahO_f263R-Hn6lKPzbZ8";
 
+const TIEMPO_INACTIVIDAD=30*60*1000;
+const CLAVE_ACTIVIDAD="habitabilidad_ultima_actividad";
 const $ = id => document.getElementById(id);
 function mostrar(tipo,texto){$("status").className="status show "+tipo;$("status").textContent=texto;}
 function mostrarMenu(usuario){
@@ -49,9 +54,21 @@ function mostrarMenu(usuario){
   $("bienvenida").textContent="Bienvenido(a), "+usuario.Nombre+". Seleccione el tipo de registro:";
 }
 
+let temporizadorSesion;
+function cerrarSesionPorInactividad(){clearTimeout(temporizadorSesion);sessionStorage.removeItem("habitabilidad_usuario");sessionStorage.removeItem(CLAVE_ACTIVIDAD);$("menu").hidden=true;$("login").hidden=false;mostrar("bad","La sesión finalizó por 30 minutos de inactividad. Ingrese nuevamente.");$("correo").focus();}
+function programarVencimiento(){clearTimeout(temporizadorSesion);const ultima=Number(sessionStorage.getItem(CLAVE_ACTIVIDAD))||Date.now(),restante=TIEMPO_INACTIVIDAD-(Date.now()-ultima);if(restante<=0){cerrarSesionPorInactividad();return;}temporizadorSesion=setTimeout(cerrarSesionPorInactividad,restante);}
+function registrarActividad(){if(!sessionStorage.getItem("habitabilidad_usuario"))return;sessionStorage.setItem(CLAVE_ACTIVIDAD,String(Date.now()));programarVencimiento();}
+function sesionVigente(){const ultima=Number(sessionStorage.getItem(CLAVE_ACTIVIDAD));return !ultima||Date.now()-ultima<TIEMPO_INACTIVIDAD;}
+function bloquearInspeccion(e){const tecla=String(e.key||"").toUpperCase(),atajoDesarrollo=e.ctrlKey&&e.shiftKey&&["I","J","C"].includes(tecla),atajoCodigo=e.ctrlKey&&tecla==="U";if(tecla==="F12"||atajoDesarrollo||atajoCodigo){e.preventDefault();e.stopPropagation();}}
+document.addEventListener("contextmenu",e=>e.preventDefault(),true);
+window.addEventListener("keydown",bloquearInspeccion,true);
+["pointerdown","keydown","scroll","touchstart"].forEach(evento=>window.addEventListener(evento,registrarActividad,{passive:true}));
+document.addEventListener("visibilitychange",()=>{if(!document.hidden&&sessionStorage.getItem("habitabilidad_usuario")){if(!sesionVigente())cerrarSesionPorInactividad();else programarVencimiento();}});
+
 try {
   const sesion=JSON.parse(sessionStorage.getItem("habitabilidad_usuario"));
-  if(sesion?.CodCia&&sesion?.Correo&&sesion?.Nombre)mostrarMenu(sesion);
+  if(sesion?.CodCia&&sesion?.Correo&&sesion?.Nombre&&sesionVigente()){mostrarMenu(sesion);registrarActividad();}
+  else if(sesion){cerrarSesionPorInactividad();}
 } catch { sessionStorage.removeItem("habitabilidad_usuario"); }
 
 $("login").addEventListener("submit", async event => {
@@ -71,6 +88,7 @@ $("login").addEventListener("submit", async event => {
     if(!Array.isArray(resultado)||resultado.length===0){mostrar("bad","El correo no se encuentra autorizado.");return;}
     const usuario=resultado[0];
     sessionStorage.setItem("habitabilidad_usuario",JSON.stringify({CodCia:usuario.CodCia,Correo:usuario.Correo,Nombre:usuario.Nombre,Inicio:new Date().toISOString()}));
+    registrarActividad();
     mostrarMenu(usuario);
   } catch(error){mostrar("bad","No se pudo validar el acceso: "+error.message);}
   finally{$("ingresar").disabled=false;}
@@ -78,6 +96,8 @@ $("login").addEventListener("submit", async event => {
 
 $("cambiar").addEventListener("click",()=>{
   sessionStorage.removeItem("habitabilidad_usuario");
+  sessionStorage.removeItem(CLAVE_ACTIVIDAD);
+  clearTimeout(temporizadorSesion);
   $("menu").hidden=true;
   $("login").hidden=false;
   $("correo").value="";
