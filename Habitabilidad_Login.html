@@ -31,10 +31,27 @@ button{width:100%;margin-top:18px;padding:12px;border:0;border-radius:4px;backgr
     <section class="menu" id="menu" hidden>
       <p class="welcome" id="bienvenida"></p>
       <div class="choices">
-        <a class="choice" href="Habitabilidad_Proyectado.html"><strong>Proyección semanal</strong><span>Seleccionar una fecha y registrar la cantidad proyectada de su semana.</span></a>
-        <a class="choice" href="Habitabilidad_Real.html"><strong>Registro real diario</strong><span>Registrar la cantidad real del día actual o de una fecha anterior.</span></a>
-		<a class="choice" href="Habitabilidad_Consulta.html"><strong>Consultar registros</strong> <span>    Revisar la información registrada por la empresa y descargarla en Excel.  </span></a>
-      </div>
+			<a class="choice"
+			   data-page="Habitabilidad_Proyectado.html"
+			   href="#">
+				<strong>Proyección semanal</strong>
+				<span>Seleccionar una fecha y registrar la cantidad proyectada de su semana.</span>
+			</a>
+
+			<a class="choice"
+			   data-page="Habitabilidad_Real.html"
+			   href="#">
+				<strong>Registro real diario</strong>
+				<span>Registrar la cantidad real del día actual o de una fecha anterior.</span>
+			</a>
+
+			<a class="choice"
+			   data-page="Habitabilidad_Consulta.html"
+			   href="#">
+				<strong>Consultar registros</strong>
+				<span>Revisar la información registrada por la empresa y descargarla en Excel.</span>
+			</a>      
+	  </div>
       <button class="change" id="cambiar" type="button">Ingresar con otro correo</button>
     </section>
     <p class="security-note">Sistema de uso exclusivo de Antamina. La sesión se cerrará después de 30 minutos de inactividad.</p>
@@ -47,12 +64,19 @@ const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
 const TIEMPO_INACTIVIDAD=30*60*1000;
 const CLAVE_ACTIVIDAD="habitabilidad_ultima_actividad";
 const $ = id => document.getElementById(id);
+ const VERSION_APP = Date.now();
 function mostrar(tipo,texto){$("status").className="status show "+tipo;$("status").textContent=texto;}
 function mostrarMenu(usuario){
   $("login").hidden=true;
   $("menu").hidden=false;
   $("bienvenida").textContent="Bienvenido(a), "+usuario.Nombre+". Seleccione el tipo de registro:";
 }
+
+
+
+        document.querySelectorAll("a.choice[data-page]").forEach(enlace => {
+            enlace.href = `${enlace.dataset.page}?v=${VERSION_APP}`;
+        });
 
 let temporizadorSesion;
 function cerrarSesionPorInactividad(){clearTimeout(temporizadorSesion);sessionStorage.removeItem("habitabilidad_usuario");sessionStorage.removeItem(CLAVE_ACTIVIDAD);$("menu").hidden=true;$("login").hidden=false;mostrar("bad","La sesión finalizó por 30 minutos de inactividad. Ingrese nuevamente.");$("correo").focus();}
