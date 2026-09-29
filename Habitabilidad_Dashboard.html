@@ -52,7 +52,7 @@
     </div>
     <div class="company-visuals">
     <div class="panel"><div class="chart-heading"><h2>Dotación total por empresa</h2><button class="secondary chart-download" type="button" data-chart="totalesEmpresa" disabled>Descargar PNG</button></div>
-      <p class="legend"><b>■</b> Proyectado &nbsp; <em>■</em> Real. Todas las cantidades disponibles según los filtros, ordenadas de mayor a menor Proyectado.</p>
+      <p class="legend"><b>■</b> Proyectado &nbsp; <em>■</em> Real. Todas las cantidades disponibles según los filtros, ordenadas alfabéticamente por nombre de empresa.</p>
       <div class="company-chart" id="totalesEmpresa"></div>
     </div>
     <div class="panel"><div class="chart-heading"><h2>Empresas con desviación mayor a ±5 %</h2><button class="secondary chart-download" type="button" data-chart="desviaciones" disabled>Descargar PNG</button></div>
@@ -140,7 +140,7 @@ function crearColumnasEmpresas(items,paraExportar=false){
   const ancho=Math.max(660,90+items.length*115),alto=paraExportar?530:420;
   const canvas=document.createElement('canvas');canvas.width=ancho*2;canvas.height=alto*2;
   canvas.style.width=ancho+'px';canvas.style.height=alto+'px';canvas.dataset.chartContent='true';
-  canvas.setAttribute('role','img');canvas.setAttribute('aria-label','Proyectado y Real por empresa, ordenados de mayor a menor Proyectado');
+  canvas.setAttribute('role','img');canvas.setAttribute('aria-label','Proyectado y Real por empresa, ordenados alfabéticamente por nombre de empresa');
   const ctx=canvas.getContext('2d');ctx.scale(2,2);ctx.fillStyle='#fff';ctx.fillRect(0,0,ancho,alto);
   const arriba=paraExportar?125:35,base=arriba+250,izquierda=60,max=Math.max(1,...items.flatMap(x=>[x.p,x.r]));
   if(paraExportar){ctx.fillStyle='#0e3f4f';ctx.font='bold 23px Segoe UI, sans-serif';ctx.fillText('Habitabilidad VPP · Dotación total por empresa',30,35);ctx.font='15px Segoe UI, sans-serif';ctx.fillText('Período: '+formato($('desde').value)+' al '+formato($('hasta').value),30,62);}
@@ -158,7 +158,7 @@ function crearColumnasEmpresas(items,paraExportar=false){
 }
 function graficarEmpresas(rows){
   const empresas=new Map();for(const x of rows){const actual=empresas.get(x.CodCia)||{nombre:x.Empresa,p:0,r:0};actual.p+=Number(x.Proyectado)||0;actual.r+=Number(x.Real)||0;empresas.set(x.CodCia,actual);}
-  totalesPorEmpresa=[...empresas.values()].sort((a,b)=>b.p-a.p||a.nombre.localeCompare(b.nombre));
+  totalesPorEmpresa=[...empresas.values()].sort((a,b)=>a.nombre.localeCompare(b.nombre,"es",{sensitivity:"base"}));
   const el=$('totalesEmpresa');el.replaceChildren();
   if(!totalesPorEmpresa.length){el.innerHTML='<p class="help">No hay empresas para los filtros seleccionados.</p>';return;}
   for(let i=0;i<totalesPorEmpresa.length;i+=100)el.append(crearColumnasEmpresas(totalesPorEmpresa.slice(i,i+100)));
