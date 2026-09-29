@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="referrer" content="no-referrer">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; connect-src https://nrvlmnyrwvjhfadvyuvq.supabase.co; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; object-src 'none'; base-uri 'none'">
+<title>Consulta general | Habitabilidad VPP</title>
+<style>
+:root{--navy:#0e3f4f;--teal:#1f6f84;--gold:#c9a84b;--bg:#f1f4f5;--line:#d5dfe3;--text:#20323b;--muted:#617681;--red:#a3341f;--green:#19704f}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:14px/1.5 "Segoe UI",system-ui,sans-serif}header{background:var(--navy);color:white;padding:22px max(20px,calc((100vw - 1480px)/2))}header h1{margin:0;font-size:23px}header p{margin:4px 0;color:#d5e9ee}main{max-width:1480px;margin:auto;padding:24px 20px 48px}.panel,.card{background:white;border:1px solid var(--line);border-radius:7px}.panel{padding:18px;margin-bottom:16px}h2{font-size:17px;margin:0 0 12px;color:var(--navy)}.help{color:var(--muted);font-size:12px;margin:4px 0 12px}.filters{display:grid;grid-template-columns:repeat(10,minmax(0,1fr));gap:12px;align-items:end}.filters>div:nth-child(3),.filters>div:nth-child(4),.filters>div:nth-child(7){grid-column:span 2}label{display:block;font-size:12px;font-weight:650;margin-bottom:4px}input,select{width:100%;min-height:38px;padding:8px;border:1px solid var(--line);border-radius:4px;background:white;color:var(--text);font:inherit}button{min-height:38px;padding:8px 15px;border:0;border-radius:4px;background:var(--navy);color:white;font:600 14px inherit;cursor:pointer}button:hover{background:var(--teal)}button:disabled{background:#aebbc0;cursor:default}.secondary{background:white;color:var(--navy);border:1px solid var(--line)}.secondary:hover{background:#eaf3f5;color:var(--navy)}.actions{display:flex;gap:8px;align-items:end}.status{padding:10px 12px;margin:12px 0;border-radius:4px;background:#eaf3f5;color:var(--navy)}.status.error{background:#fbefec;color:var(--red)}.status[hidden],.panel[hidden],section[hidden]{display:none}.login{max-width:500px;margin:24px auto}.login .row{display:flex;gap:8px}.login .row>*:first-child{flex:1}.login input{margin-bottom:10px}.metrics{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin:16px 0}.card{padding:15px;border-top:3px solid var(--teal)}.card.warn{border-top-color:var(--red)}.card.gold{border-top-color:var(--gold)}.card strong{display:block;font-size:26px;color:var(--navy);font-variant-numeric:tabular-nums}.card span{font-size:12px;color:var(--muted)}.visuals{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;align-items:stretch}.visuals>.panel{min-width:0;min-height:440px}.chart-heading{display:flex;align-items:start;justify-content:space-between;gap:8px}.chart-heading h2{margin-top:5px}.chart-download{min-height:31px;padding:5px 9px;font-size:12px;white-space:nowrap}.visuals #grafico{max-height:350px;overflow:auto}.pending-list{max-height:350px;overflow:auto}.pending-list .chart-row{grid-template-columns:minmax(0,1.2fr) minmax(0,1fr) 35px;gap:6px}.pending-list .chart-row span{overflow-wrap:anywhere;font-size:12px;line-height:1.3}.pending-list .chart-row.real .bar i{background:var(--gold)}.chart-row{display:grid;grid-template-columns:145px 1fr 55px;align-items:center;gap:10px;margin:9px 0}.chart-row .bar{height:13px;background:#e8eef0;border-radius:9px;overflow:hidden}.chart-row .bar i{display:block;height:100%;background:var(--teal)}.chart-row.real .bar i{background:var(--gold)}.chart-row small{color:var(--muted);text-align:right}.legend{color:var(--muted);font-size:12px}.legend b{color:var(--teal)}.legend em{font-style:normal;color:#9b7a26}.tablewrap{overflow:auto;max-height:550px}.data{width:100%;border-collapse:collapse;min-width:1000px;font-size:12px}.data th{position:sticky;top:0;background:var(--navy);color:white;z-index:1;text-align:left}.data th,.data td{padding:9px;border-bottom:1px solid var(--line)}.data td.num{text-align:right;font-variant-numeric:tabular-nums}.data tr:hover{background:#f5f9fa}.data tfoot td{position:sticky;bottom:0;background:#eaf3f5;color:var(--navy);font-weight:700;border-top:2px solid var(--teal);z-index:1}.tag{display:inline-block;padding:3px 7px;border-radius:4px;font-weight:600;white-space:nowrap}.missing{background:#fae9e5;color:var(--red)}.partial{background:#fff4db;color:#805d13}.done{background:#e7f4ed;color:var(--green)}.future{background:#e9eef1;color:var(--muted)}.small{font-size:12px;color:var(--muted)}@media(max-width:950px){.filters{grid-template-columns:1fr 1fr}.filters>div:nth-child(3),.filters>div:nth-child(4),.filters>div:nth-child(7){grid-column:auto}.metrics{grid-template-columns:repeat(2,1fr)}.visuals{grid-template-columns:1fr}.visuals>.panel{min-height:0}}@media(max-width:550px){.filters,.metrics{grid-template-columns:1fr}.login .row{display:block}.actions{flex-wrap:wrap}}
+</style>
+</head>
+<body>
+<header><h1>Habitabilidad VPP · seguimiento general</h1><p>Contratos vigentes, pendientes y comparación de dotación proyectada y real</p></header>
+<main>
+  <section id="accesoGeneral" class="panel" style="max-width:450px;margin:24px auto">
+    <h2>Consulta general VPP</h2>
+    <p class="help">Acceso para usuarios Antamina autorizados. La sesión vence tras 30 minutos sin consultar datos.</p>
+    <label for="correoAdmin">Correo</label><input id="correoAdmin" readonly>
+    <label for="claveAdmin" style="margin-top:12px">Contraseña</label><input id="claveAdmin" type="password" autocomplete="current-password">
+    <div class="actions" style="margin-top:15px"><button id="ingresarGeneral" type="button">Ingresar</button><button id="volverLogin" class="secondary" type="button">Volver al menú</button></div>
+    <div id="mensajeIngreso" class="status" hidden role="status"></div>
+  </section>
+  <section id="tablero" hidden>
+    <div class="panel">
+      <div class="actions" style="justify-content:space-between"><p class="help">Consulta general de todos los contratos.</p><button id="volverMenu" class="secondary" type="button">Volver al menú</button></div>
+      <div class="filters">
+        <div><label for="desde">Desde</label><input type="date" id="desde"></div>
+        <div><label for="hasta">Hasta</label><input type="date" id="hasta"></div>
+        <div><label for="empresa">Empresa</label><select id="empresa"><option value="">Todas las empresas</option></select></div>
+        <div><label for="contrato">Contrato</label><select id="contrato"><option value="">Todos los contratos</option></select></div>
+        <div><label for="responsables">Responsables</label><select id="responsables"><option value="">Todos</option><option value="Si tiene">Si tiene</option><option value="No tiene">No tiene</option></select></div>
+        <div><label for="estado">Estado de registro</label><select id="estado"><option value="">Todos</option><option value="real">Real pendiente</option><option value="proy">Proyectado pendiente</option><option value="completo">Ambos completos</option></select></div>
+        <div class="actions"><button id="consultar">Consultar</button><button class="secondary" id="exportar" disabled>Exportar CSV</button></div>
+      </div>
+      <p class="help">Período máximo: 93 días. Las métricas de Real consideran únicamente fechas hasta hoy (hora de Perú). Con al menos un registro WORKER, ADMIN (Staff) o SUPER, incluso con valor 0, el contrato/día cuenta como Completo.</p>
+      <div id="mensaje" class="status" hidden role="status"></div>
+    </div>
+    <div class="metrics">
+      <div class="card"><span>Contratos vigentes en el período</span><strong id="kContratos">—</strong></div>
+      <div class="card warn"><span>Real pendiente · contrato/día</span><strong id="kRealPend">—</strong></div>
+      <div class="card warn"><span>Proyectado pendiente · contrato/día</span><strong id="kProyPend">—</strong></div>
+      <div class="card gold"><span>Real vs. proyectado comparables</span><strong id="kVariacion">—</strong></div>
+      <div class="card"><span>Cumplimiento real / proyectado</span><strong id="kPorcentaje">—</strong></div>
+    </div>
+    <div class="visuals">
+      <div class="panel"><div class="chart-heading"><h2>Dotación por día</h2><button class="secondary chart-download" type="button" data-chart="grafico" disabled>Descargar PNG</button></div><p class="legend"><b>■</b> Proyectado &nbsp; <em>■</em> Real. Se grafican únicamente los contratos/días con ambos registros completos.</p><div id="grafico"></div></div>
+      <div class="panel"><div class="chart-heading"><h2>Proyectado pendiente</h2><button class="secondary chart-download" type="button" data-chart="pendientesProyectado" disabled>Descargar PNG</button></div><p class="help">Empresa y contrato · días sin proyección completa en el período.</p><div class="pending-list" id="pendientesProyectado"></div></div>
+      <div class="panel"><div class="chart-heading"><h2>Real pendiente</h2><button class="secondary chart-download" type="button" data-chart="pendientesReal" disabled>Descargar PNG</button></div><p class="help">Empresa y contrato · días sin registro real completo hasta hoy (hora de Perú).</p><div class="pending-list" id="pendientesReal"></div></div>
+    </div>
+    <div class="panel"><h2>Detalle de contratos</h2><p id="cuenta" class="help"></p>
+      <p class="help">La diferencia total considera solo contrato/días con Proyectado y Real completos.</p><div class="tablewrap"><table class="data"><thead><tr><th>Fecha</th><th>Empresa</th><th>Contrato</th><th>Descripción</th><th>Responsables</th><th>Proyectado</th><th>Real</th><th>Diferencia</th><th>Registro proyectado</th><th>Registro real</th></tr></thead><tbody id="filas"></tbody><tfoot><tr><td colspan="5">Total de filas filtradas</td><td id="totalProyectado" class="num">—</td><td id="totalReal" class="num">—</td><td id="totalDiferencia" class="num">—</td><td colspan="2"></td></tr></tfoot></table></div>
+    </div>
+  </section>
+</main>
+<script>
+"use strict";
+const URL_BASE="https://nrvlmnyrwvjhfadvyuvq.supabase.co";
+const ANON="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5ydmxtbnlyd3ZqaGZhZHZ5dXZxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTkyMzM0MDcsImV4cCI6MjA3NDgwOTQwN30.9CLJzGIh19GzSjT7XxZAu9fahO_f263R-Hn6lKPzbZ8";
+const $=id=>document.getElementById(id);
+let datos=[],filtrados=[],tokenSesion=sessionStorage.getItem("habitabilidad_admin_token")||"";
+const hoyPE=()=>new Intl.DateTimeFormat("en-CA",{timeZone:"America/Lima",year:"numeric",month:"2-digit",day:"2-digit"}).format(new Date());
+const iso=d=>d.toISOString().slice(0,10);
+const dias=(s,n)=>{const d=new Date(s+"T12:00:00Z");d.setUTCDate(d.getUTCDate()+n);return iso(d)};
+const formato=s=>s?String(s).slice(8,10)+"/"+String(s).slice(5,7)+"/"+String(s).slice(0,4):"—";
+const numero=n=>Number(n||0).toLocaleString("es-PE");
+function mensaje(id,texto,error=false){const el=$(id);el.hidden=!texto;el.textContent=texto||"";el.className="status"+(error?" error":"")}
+function html(s){return String(s??"").replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;").replaceAll("'","&#39;")}
+const usuario=(()=>{try{return JSON.parse(sessionStorage.getItem("habitabilidad_usuario"))||{}}catch{return {}}})();
+if(!usuario.Correo)location.replace("Habitabilidad_Login.html");
+$("correoAdmin").value=usuario.Correo||"";
+const cabeceras={"Content-Type":"application/json",apikey:ANON,Authorization:"Bearer "+ANON};
+async function rpc(nombre,cuerpo){const r=await fetch(URL_BASE+"/rest/v1/rpc/"+nombre,{method:"POST",headers:cabeceras,body:JSON.stringify(cuerpo)}),d=await r.json().catch(()=>null);if(!r.ok)throw new Error(d?.message||("HTTP "+r.status));return d}
+function mostrarIngreso(error){tokenSesion="";sessionStorage.removeItem("habitabilidad_admin_token");$("tablero").hidden=true;$("accesoGeneral").hidden=false;if(error)mensaje("mensajeIngreso",error,true)}
+$("ingresarGeneral").onclick=async()=>{const clave=$("claveAdmin").value;if(!clave){mensaje("mensajeIngreso","Ingrese la contraseña.",true);return}$("ingresarGeneral").disabled=true;mensaje("mensajeIngreso","Validando acceso…");try{const token=await rpc("Habitabilidad_IniciarSesionGeneral",{CorreoConsulta:usuario.Correo,ClaveConsulta:clave});if(!token)throw new Error("Credenciales no válidas o acceso bloqueado temporalmente.");tokenSesion=token;sessionStorage.setItem("habitabilidad_admin_token",token);$("claveAdmin").value="";await consultar();$("accesoGeneral").hidden=true;$("tablero").hidden=false;mensaje("mensajeIngreso","")}catch(e){mostrarIngreso(e.message)}finally{$("ingresarGeneral").disabled=false}};
+$("claveAdmin").addEventListener("keydown",e=>{if(e.key==="Enter")$("ingresarGeneral").click()});
+$("volverLogin").onclick=()=>location.href="Habitabilidad_Login.html";
+$("volverMenu").onclick=()=>location.href="Habitabilidad_Login.html";
+$("consultar").onclick=()=>consultar().catch(()=>{});
+async function consultar(){const desde=$("desde").value,hasta=$("hasta").value;if(!desde||!hasta||hasta<desde||dias(desde,92)<hasta){mensaje("mensaje","Elija un período válido de hasta 93 días.",true);return}if(!tokenSesion){mostrarIngreso("Ingrese su contraseña.");return}$("consultar").disabled=true;mensaje("mensaje","Cargando contratos y registros…");try{const data=await rpc("Habitabilidad_ResumenGeneral",{TokenSesion:tokenSesion,FechaDesde:desde,FechaHasta:hasta});if(!Array.isArray(data))throw new Error("Respuesta no válida");datos=data;const sel=$("empresa"),valor=sel.value;sel.innerHTML='<option value="">Todas las empresas</option>'+[...new Map(datos.map(x=>[x.CodCia,x.Empresa])).entries()].sort((a,b)=>a[1].localeCompare(b[1])).map(([id,n])=>'<option value="'+html(id)+'">'+html(n)+'</option>').join("");sel.value=valor;actualizarContratos();render();mensaje("mensaje",numero(datos.length)+" contrato/días evaluados.")}catch(e){if(/sesión|autorizad|42501|403/i.test(e.message)){mostrarIngreso("La sesión venció. Ingrese nuevamente.")}else{mensaje("mensaje","No se pudo consultar: "+e.message,true)}throw e}finally{$("consultar").disabled=false}}
+function actualizarContratos(){
+  const empresa=$("empresa").value,seleccion=$("contrato").value;
+  const contratos=new Map();
+  for(const x of datos){if(empresa&&x.CodCia!==empresa)continue;
+    const clave=x.CodCia+"|"+x.Contrato;
+    if(!contratos.has(clave))contratos.set(clave,{codigo:x.Contrato,empresa:x.Empresa,descripcion:x.DescripcionContrato});
+  }
+  $("contrato").innerHTML='<option value="">Todos los contratos</option>'+[...contratos.entries()]
+    .sort((a,b)=>a[1].empresa.localeCompare(b[1].empresa)||String(a[1].codigo).localeCompare(String(b[1].codigo)))
+    .map(([clave,c])=>'<option value="'+html(clave)+'">'+html(c.codigo+' — '+(empresa?'':c.empresa+' — ')+(c.descripcion||''))+'</option>').join('');
+  $("contrato").value=contratos.has(seleccion)?seleccion:"";
+}
+function estado(x,t){const n=Number(t==="real"?x.RealTipos:x.ProyectadoTipos);return n>=1?"Completo":"Pendiente"}
+function etiqueta(s){return '<span class="tag '+(s==="Completo"?"done":s==="No exigible"?"future":"missing")+'">'+html(s)+'</span>'}
+function render(){const h=hoyPE(),cia=$("empresa").value,contrato=$("contrato").value,responsables=$("responsables").value,filtro=$("estado").value;filtrados=datos.filter(x=>{if(cia&&x.CodCia!==cia)return false;if(contrato&&x.CodCia+"|"+x.Contrato!==contrato)return false;if(responsables&&x.Responsables!==responsables)return false;const real=x.Fecha<=h&&Number(x.RealTipos)<1,proy=Number(x.ProyectadoTipos)<1;return !filtro||(filtro==="real"&&real)||(filtro==="proy"&&proy)||(filtro==="completo"&&!real&&!proy&&x.Fecha<=h)});const fechasReal=filtrados.filter(x=>x.Fecha<=h),comunes=fechasReal.filter(x=>Number(x.RealTipos)>=1&&Number(x.ProyectadoTipos)>=1);const real=comunes.reduce((a,x)=>a+Number(x.Real||0),0),proy=comunes.reduce((a,x)=>a+Number(x.Proyectado||0),0);$("kContratos").textContent=numero(new Set(filtrados.map(x=>x.CodCia+"|"+x.Contrato)).size);$("kRealPend").textContent=numero(fechasReal.filter(x=>Number(x.RealTipos)<1).length);$("kProyPend").textContent=numero(filtrados.filter(x=>Number(x.ProyectadoTipos)<1).length);$("kVariacion").textContent=comunes.length?((real-proy)>=0?"+":"")+numero(real-proy):"—";$("kPorcentaje").textContent=comunes.length&&proy>0?(100*real/proy).toLocaleString("es-PE",{maximumFractionDigits:1})+" %":"—";$("cuenta").textContent=numero(filtrados.length)+" contrato/días · "+numero(comunes.length)+" con ambas cantidades completas para comparación.";graficar(comunes);pendientes(filtrados,h);tabla(filtrados,h);$("exportar").disabled=!filtrados.length;document.querySelectorAll(".chart-download").forEach(b=>b.disabled=!$(b.dataset.chart).querySelector(".chart-row"))}
+function barras(container,items,color){const max=Math.max(1,...items.map(x=>x.value));$(container).innerHTML=items.length?items.map(x=>'<div class="chart-row '+(color||"")+'"><span title="'+html(x.label)+'">'+html(x.label)+'</span><div class="bar"><i style="width:'+Math.max(0,100*x.value/max)+'%"></i></div><small>'+numero(x.value)+'</small></div>').join(""):'<p class="help">No hay datos para este gráfico.</p>'}
+function graficar(rows){const m=new Map();for(const x of rows){const k=x.Fecha,v=m.get(k)||{p:0,r:0};v.p+=Number(x.Proyectado||0);v.r+=Number(x.Real||0);m.set(k,v)}const max=Math.max(1,...[...m.values()].flatMap(x=>[x.p,x.r]));$("grafico").innerHTML=m.size?[...m.entries()].sort((a,b)=>a[0].localeCompare(b[0])).map(([d,v])=>'<div class="small">'+formato(d)+'</div><div class="chart-row"><span>Proyectado</span><div class="bar"><i style="width:'+100*v.p/max+'%"></i></div><small>'+numero(v.p)+'</small></div><div class="chart-row real"><span>Real</span><div class="bar"><i style="width:'+100*v.r/max+'%"></i></div><small>'+numero(v.r)+'</small></div>').join(""):'<p class="help">No hay contrato/días con ambas cantidades completas.</p>'}
+function pendientes(rows,h){
+  const proy=new Map(),real=new Map();
+  for(const x of rows){
+    const clave=x.CodCia+"|"+x.Contrato;
+    const etiqueta=x.Empresa+" · "+x.Contrato;
+    if(Number(x.ProyectadoTipos)<1){const actual=proy.get(clave)||{label:etiqueta,value:0};actual.value++;proy.set(clave,actual)}
+    if(x.Fecha<=h&&Number(x.RealTipos)<1){const actual=real.get(clave)||{label:etiqueta,value:0};actual.value++;real.set(clave,actual)}
+  }
+  const ordenar=m=>[...m.values()].sort((a,b)=>b.value-a.value||a.label.localeCompare(b.label));
+  barras("pendientesProyectado",ordenar(proy));
+  barras("pendientesReal",ordenar(real),"real");
+}
+function tabla(rows,h){
+  let proy=0,real=0,diferencia=0,comparables=0;
+  for(const x of rows){
+    if(x.Proyectado!=null)proy+=Number(x.Proyectado)||0;
+    if(x.Real!=null)real+=Number(x.Real)||0;
+    if(x.Fecha<=h&&estado(x,"proy")==="Completo"&&estado(x,"real")==="Completo"){
+      diferencia+=(Number(x.Real)||0)-(Number(x.Proyectado)||0);comparables++;
+    }
+  }
+  $("totalProyectado").textContent=rows.length?numero(proy):"—";
+  $("totalReal").textContent=rows.length?numero(real):"—";
+  $("totalDiferencia").textContent=comparables?numero(diferencia):"—";
+  $("filas").innerHTML=rows.length?rows.slice().sort((a,b)=>b.Fecha.localeCompare(a.Fecha)||a.Empresa.localeCompare(b.Empresa)).map(x=>{const p=estado(x,"proy"),r=x.Fecha>h?"No exigible":estado(x,"real"),ambos=p==="Completo"&&r==="Completo";return '<tr><td>'+formato(x.Fecha)+'</td><td>'+html(x.Empresa)+'</td><td>'+html(x.Contrato)+'</td><td>'+html(x.DescripcionContrato)+'</td><td>'+html(x.Responsables??'—')+'</td><td class="num">'+(x.Proyectado==null?"—":numero(x.Proyectado))+'</td><td class="num">'+(x.Real==null?"—":numero(x.Real))+'</td><td class="num">'+(ambos?numero(Number(x.Real)-Number(x.Proyectado)):"—")+'</td><td>'+etiqueta(p)+'</td><td>'+etiqueta(r)+'</td></tr>'}).join(""):'<tr><td colspan="10">No hay contratos para los filtros seleccionados.</td></tr>'}
+const titulosGrafico={grafico:"Dotación por día",pendientesProyectado:"Proyectado pendiente",pendientesReal:"Real pendiente"};
+function descargarGrafico(id){
+  const contenedor=$(id),elementos=[...contenedor.children],filas=[];
+  for(const el of elementos){
+    if(el.classList.contains("small"))filas.push({fecha:el.textContent.trim()});
+    else if(el.classList.contains("chart-row"))filas.push({label:el.querySelector("span").textContent.trim(),valor:el.querySelector("small").textContent.trim(),porcentaje:parseFloat(el.querySelector(".bar i").style.width)||0,real:el.classList.contains("real")});
+  }
+  if(!filas.some(x=>!x.fecha))return;
+  const ancho=1400,altoFila=54,porPagina=120,total=Math.ceil(filas.length/porPagina),titulo=titulosGrafico[id],escala=2;
+  for(let pagina=0;pagina<total;pagina++){
+    const bloque=filas.slice(pagina*porPagina,(pagina+1)*porPagina),canvas=document.createElement("canvas");
+    canvas.width=ancho*escala;canvas.height=(180+bloque.length*altoFila)*escala;
+    const ctx=canvas.getContext("2d");if(!ctx)throw new Error("El navegador no admite exportar imágenes.");
+    ctx.scale(escala,escala);ctx.fillStyle="#fff";ctx.fillRect(0,0,ancho,canvas.height/escala);
+    ctx.fillStyle="#0e3f4f";ctx.font="bold 30px Segoe UI, sans-serif";ctx.fillText("Habitabilidad VPP · "+titulo,50,56);
+    ctx.font="18px Segoe UI, sans-serif";ctx.fillStyle="#617681";ctx.fillText("Período: "+formato($("desde").value)+" al "+formato($("hasta").value)+(total>1?" · Parte "+(pagina+1)+" de "+total:""),50,92);
+    ctx.fillText("Filtros aplicados · "+numero(filtrados.length)+" contrato/días",50,122);
+    let y=160;
+    for(const fila of bloque){
+      if(fila.fecha){ctx.fillStyle="#0e3f4f";ctx.font="bold 20px Segoe UI, sans-serif";ctx.fillText(fila.fecha,50,y+22);y+=altoFila;continue}
+      ctx.fillStyle="#20323b";ctx.font="18px Segoe UI, sans-serif";
+      let label=fila.label;if(ctx.measureText(label).width>550){while(label.length&&ctx.measureText(label+"…").width>550)label=label.slice(0,-1);label+="…"}
+      ctx.fillText(label,50,y+22);
+      ctx.fillStyle="#e8eef0";ctx.fillRect(640,y+5,580,22);
+      ctx.fillStyle=fila.real?"#c9a84b":"#1f6f84";ctx.fillRect(640,y+5,580*Math.max(0,Math.min(100,fila.porcentaje))/100,22);
+      ctx.fillStyle="#20323b";ctx.fillText(fila.valor,1245,y+22);y+=altoFila;
+    }
+    const enlace=document.createElement("a");enlace.href=canvas.toDataURL("image/png");enlace.download="Habitabilidad_"+id+"_"+$("desde").value+"_"+$("hasta").value+(total>1?"_"+(pagina+1):"")+".png";document.body.append(enlace);enlace.click();enlace.remove();
+  }
+}
+document.querySelectorAll(".chart-download").forEach(b=>b.onclick=()=>{try{descargarGrafico(b.dataset.chart)}catch(e){mensaje("mensaje","No se pudo exportar el gráfico: "+e.message,true)}});
+function csvCell(x){return '"'+String(x??"").replaceAll('"','""')+'"'}
+$("exportar").onclick=()=>{const h=hoyPE(),cab=["Fecha","CodCia","Empresa","Contrato","Descripcion","Responsables","Proyectado","Real","Diferencia","EstadoProyectado","EstadoReal"],lineas=[cab.map(csvCell).join(";")];for(const x of filtrados){const p=estado(x,"proy"),r=x.Fecha>h?"No exigible":estado(x,"real");lineas.push([x.Fecha,x.CodCia,x.Empresa,x.Contrato,x.DescripcionContrato,x.Responsables,x.Proyectado,x.Real,p==="Completo"&&r==="Completo"?Number(x.Real)-Number(x.Proyectado):"",p,r].map(csvCell).join(";"))}const blob=new Blob(["\ufeff"+lineas.join("\r\n")],{type:"text/csv;charset=utf-8"}),a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="Habitabilidad_General_"+$("desde").value+"_"+$("hasta").value+".csv";a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000)};
+$("empresa").onchange=()=>{actualizarContratos();render()};["contrato","responsables","estado"].forEach(id=>$(id).onchange=render);
+const hoy=hoyPE(),lunes=dias(hoy,-((new Date(hoy+"T12:00:00Z").getUTCDay()+6)%7));$("desde").value=lunes;$("hasta").value=dias(lunes,6);
+if(tokenSesion){consultar().then(()=>{$("accesoGeneral").hidden=true;$("tablero").hidden=false}).catch(()=>{})}
+</script>
+</body>
+</html>
