@@ -60,6 +60,16 @@
       <div class="deviation-chart" id="desviaciones"></div>
     </div>
     </div>
+    <div class="company-visuals">
+      <div class="panel"><div class="chart-heading"><h2>Dotación por empresa · 2Personnel y Real</h2><button class="secondary chart-download" type="button" data-chart="totalesEmpresa2" disabled>Descargar PNG</button></div>
+        <p class="legend"><b>■</b> 2Personnel &nbsp; <em>■</em> Real. Totales disponibles de los contratos y fechas filtrados, por nombre de empresa. Una fuente ausente se indica como “Sin datos”.</p>
+        <div class="company-chart" id="totalesEmpresa2"></div>
+      </div>
+      <div class="panel"><div class="chart-heading"><h2>Desviaciones · Real vs. 2Personnel</h2><button class="secondary chart-download" type="button" data-chart="desviaciones2" disabled>Descargar PNG</button></div>
+        <p class="help">(Real − 2Personnel) / 2Personnel × 100, por empresa. Solo los mismos contrato/días hasta hoy con ambas fuentes disponibles; requiere total 2Personnel mayor que 0.</p>
+        <p class="help" id="cobertura2"></p><div class="deviation-chart" id="desviaciones2"></div>
+      </div>
+    </div>
     <div class="panel"><h2>Detalle de contratos</h2><p id="cuenta" class="help"></p>
       <p class="help">El total registrado coincide con la suma del gráfico por día. El total comparable considera solo contrato/días hasta hoy con ambos registros completos para calcular la diferencia.</p><div class="tablewrap"><table class="data"><thead><tr><th>Fecha</th><th>Empresa</th><th>Contrato</th><th>Descripción</th><th>Responsables</th><th>Proyectado</th><th>Real</th><th>Diferencia</th><th>Registro proyectado</th><th>Registro real</th></tr></thead><tbody id="filas"></tbody><tfoot><tr><td colspan="5" id="labelRegistrado">Total registrado (filas filtradas)</td><td id="totalProyectado" class="num">—</td><td id="totalReal" class="num">—</td><td class="num">—</td><td colspan="2"></td></tr><tr><td colspan="5" id="labelComparable">Total comparable (para diferencia)</td><td id="comparableProyectado" class="num">—</td><td id="comparableReal" class="num">—</td><td id="totalDiferencia" class="num">—</td><td colspan="2"></td></tr></tfoot></table></div>
     </div>
@@ -89,7 +99,7 @@ $("claveAdmin").addEventListener("keydown",e=>{if(e.key==="Enter")$("ingresarGen
 $("volverLogin").onclick=()=>location.href="Habitabilidad_Login.html";
 $("volverMenu").onclick=()=>location.href="Habitabilidad_Login.html";
 $("consultar").onclick=()=>consultar().catch(()=>{});
-async function consultar(){const desde=$("desde").value,hasta=$("hasta").value;if(!desde||!hasta||hasta<desde||dias(desde,92)<hasta){mensaje("mensaje","Elija un período válido de hasta 93 días.",true);return}if(!tokenSesion){mostrarIngreso("Ingrese su contraseña.");return}$("consultar").disabled=true;mensaje("mensaje","Cargando contratos y registros…");try{const data=await rpc("Habitabilidad_ResumenGeneral",{TokenSesion:tokenSesion,FechaDesde:desde,FechaHasta:hasta});if(!Array.isArray(data))throw new Error("Respuesta no válida");datos=data;const sel=$("empresa"),valor=sel.value;sel.innerHTML='<option value="">Todas las empresas</option>'+[...new Map(datos.map(x=>[x.CodCia,x.Empresa])).entries()].sort((a,b)=>a[1].localeCompare(b[1])).map(([id,n])=>'<option value="'+html(id)+'">'+html(n)+'</option>').join("");sel.value=valor;actualizarContratos();render();mensaje("mensaje",numero(datos.length)+" contrato/días evaluados.")}catch(e){if(/sesión|autorizad|42501|403/i.test(e.message)){mostrarIngreso("La sesión venció. Ingrese nuevamente.")}else{mensaje("mensaje","No se pudo consultar: "+e.message,true)}throw e}finally{$("consultar").disabled=false}}
+async function consultar(){const desde=$("desde").value,hasta=$("hasta").value;if(!desde||!hasta||hasta<desde||dias(desde,92)<hasta){mensaje("mensaje","Elija un período válido de hasta 93 días.",true);return}if(!tokenSesion){mostrarIngreso("Ingrese su contraseña.");return}$("consultar").disabled=true;mensaje("mensaje","Cargando contratos y registros…");try{const data=await rpc("Habitabilidad_ResumenGeneral",{TokenSesion:tokenSesion,FechaDesde:desde,FechaHasta:hasta});if(!Array.isArray(data))throw new Error("Respuesta no válida");const personal=await rpc("Habitabilidad_Resumen2Personnel",{TokenSesion:tokenSesion,FechaDesde:desde,FechaHasta:hasta});if(!Array.isArray(personal))throw new Error("Respuesta de 2Personnel no válida");const mapaPersonal=new Map(personal.map(x=>[String(x.Contrato)+"|"+x.Fecha,x.Total]));datos=data.map(x=>({...x,Personal2:mapaPersonal.get(String(x.Contrato)+"|"+x.Fecha)??null}));const sel=$("empresa"),valor=sel.value;sel.innerHTML='<option value="">Todas las empresas</option>'+[...new Map(datos.map(x=>[x.CodCia,x.Empresa])).entries()].sort((a,b)=>a[1].localeCompare(b[1])).map(([id,n])=>'<option value="'+html(id)+'">'+html(n)+'</option>').join("");sel.value=valor;actualizarContratos();render();mensaje("mensaje",numero(datos.length)+" contrato/días evaluados.")}catch(e){if(/sesión|autorizad|42501|403/i.test(e.message)){mostrarIngreso("La sesión venció. Ingrese nuevamente.")}else{mensaje("mensaje","No se pudo consultar: "+e.message,true)}throw e}finally{$("consultar").disabled=false}}
 function actualizarContratos(){
   const empresa=$("empresa").value,seleccion=$("contrato").value;
   const contratos=new Map();
@@ -104,7 +114,7 @@ function actualizarContratos(){
 }
 function estado(x,t){const n=Number(t==="real"?x.RealTipos:x.ProyectadoTipos);return n>=1?"Completo":"Pendiente"}
 function etiqueta(s){return '<span class="tag '+(s==="Completo"?"done":s==="No exigible"?"future":"missing")+'">'+html(s)+'</span>'}
-function render(){const h=hoyPE(),cia=$("empresa").value,contrato=$("contrato").value,responsables=$("responsables").value,filtro=$("estado").value;filtrados=datos.filter(x=>{if(cia&&x.CodCia!==cia)return false;if(contrato&&x.CodCia+"|"+x.Contrato!==contrato)return false;if(responsables&&x.Responsables!==responsables)return false;const real=x.Fecha<=h&&Number(x.RealTipos)<1,proy=Number(x.ProyectadoTipos)<1;return !filtro||(filtro==="real"&&real)||(filtro==="proy"&&proy)||(filtro==="completo"&&!real&&!proy&&x.Fecha<=h)});const fechasReal=filtrados.filter(x=>x.Fecha<=h),comunes=fechasReal.filter(x=>Number(x.RealTipos)>=1&&Number(x.ProyectadoTipos)>=1);const real=comunes.reduce((a,x)=>a+Number(x.Real||0),0),proy=comunes.reduce((a,x)=>a+Number(x.Proyectado||0),0);$("kContratos").textContent=numero(new Set(filtrados.map(x=>x.CodCia+"|"+x.Contrato)).size);$("kRealPend").textContent=numero(fechasReal.filter(x=>Number(x.RealTipos)<1).length);$("kProyPend").textContent=numero(filtrados.filter(x=>Number(x.ProyectadoTipos)<1).length);$("kVariacion").textContent=comunes.length?((real-proy)>=0?"+":"")+numero(real-proy):"—";$("kPorcentaje").textContent=comunes.length&&proy>0?(100*real/proy).toLocaleString("es-PE",{maximumFractionDigits:1})+" %":"—";$("cuenta").textContent=numero(filtrados.length)+" contrato/días · "+numero(comunes.length)+" con ambas cantidades completas para comparación.";graficar(filtrados);pendientes(filtrados,h);graficarDesviaciones(comunes);graficarEmpresas(filtrados);tabla(filtrados,h);$("exportar").disabled=!filtrados.length;document.querySelectorAll(".chart-download").forEach(b=>b.disabled=!$(b.dataset.chart).querySelector(".chart-row,canvas[data-chart-content]"))}
+function render(){const h=hoyPE(),cia=$("empresa").value,contrato=$("contrato").value,responsables=$("responsables").value,filtro=$("estado").value;filtrados=datos.filter(x=>{if(cia&&x.CodCia!==cia)return false;if(contrato&&x.CodCia+"|"+x.Contrato!==contrato)return false;if(responsables&&x.Responsables!==responsables)return false;const real=x.Fecha<=h&&Number(x.RealTipos)<1,proy=Number(x.ProyectadoTipos)<1;return !filtro||(filtro==="real"&&real)||(filtro==="proy"&&proy)||(filtro==="completo"&&!real&&!proy&&x.Fecha<=h)});const fechasReal=filtrados.filter(x=>x.Fecha<=h),comunes=fechasReal.filter(x=>Number(x.RealTipos)>=1&&Number(x.ProyectadoTipos)>=1);const real=comunes.reduce((a,x)=>a+Number(x.Real||0),0),proy=comunes.reduce((a,x)=>a+Number(x.Proyectado||0),0);$("kContratos").textContent=numero(new Set(filtrados.map(x=>x.CodCia+"|"+x.Contrato)).size);$("kRealPend").textContent=numero(fechasReal.filter(x=>Number(x.RealTipos)<1).length);$("kProyPend").textContent=numero(filtrados.filter(x=>Number(x.ProyectadoTipos)<1).length);$("kVariacion").textContent=comunes.length?((real-proy)>=0?"+":"")+numero(real-proy):"—";$("kPorcentaje").textContent=comunes.length&&proy>0?(100*real/proy).toLocaleString("es-PE",{maximumFractionDigits:1})+" %":"—";$("cuenta").textContent=numero(filtrados.length)+" contrato/días · "+numero(comunes.length)+" con ambas cantidades completas para comparación.";graficar(filtrados);pendientes(filtrados,h);graficarDesviaciones(comunes);graficarEmpresas(filtrados);graficarEmpresas2(filtrados);const comparables2=filtrados.filter(x=>x.Fecha<=h&&Number(x.RealTipos)>=1&&x.Personal2!=null);graficarDesviaciones(comparables2,"desviaciones2",true);$("cobertura2").textContent=numero(comparables2.length)+" de "+numero(fechasReal.length)+" contrato/días hasta hoy con ambas fuentes disponibles.";tabla(filtrados,h);$("exportar").disabled=!filtrados.length;document.querySelectorAll(".chart-download").forEach(b=>b.disabled=!$(b.dataset.chart).querySelector(".chart-row,canvas[data-chart-content]"))}
 function barras(container,items,color){const max=Math.max(1,...items.map(x=>x.value));$(container).innerHTML=items.length?items.map(x=>'<div class="chart-row '+(color||"")+'"><span title="'+html(x.label)+'">'+html(x.label)+'</span><div class="bar"><i style="width:'+Math.max(0,100*x.value/max)+'%"></i></div><small>'+numero(x.value)+'</small></div>').join(""):'<p class="help">No hay datos para este gráfico.</p>'}
 function graficar(rows){const m=new Map();for(const x of rows){if(x.Proyectado==null&&x.Real==null)continue;const k=x.Fecha,v=m.get(k)||{p:0,r:0};v.p+=Number(x.Proyectado||0);v.r+=Number(x.Real||0);m.set(k,v)}const max=Math.max(1,...[...m.values()].flatMap(x=>[x.p,x.r]));$("grafico").innerHTML=m.size?[...m.entries()].sort((a,b)=>a[0].localeCompare(b[0])).map(([d,v])=>'<div class="small">'+formato(d)+'</div><div class="chart-row"><span>Proyectado</span><div class="bar"><i style="width:'+100*v.p/max+'%"></i></div><small>'+numero(v.p)+'</small></div><div class="chart-row real"><span>Real</span><div class="bar"><i style="width:'+100*v.r/max+'%"></i></div><small>'+numero(v.r)+'</small></div>').join(""):'<p class="help">No hay cantidades registradas para los filtros seleccionados.</p>'}
 function pendientes(rows,h){
@@ -119,11 +129,11 @@ function pendientes(rows,h){
   barras("pendientesProyectado",ordenar(proy));
   barras("pendientesReal",ordenar(real),"real");
 }
-function graficarDesviaciones(rows){
+function graficarDesviaciones(rows,id="desviaciones",fuente2=false){
   const empresas=new Map();
   for(const x of rows){
     const clave=x.CodCia,actual=empresas.get(clave)||{nombre:x.Empresa,proyectado:0,real:0};
-    actual.proyectado+=Number(x.Proyectado)||0;
+    actual.proyectado+=Number(fuente2?x.Personal2:x.Proyectado)||0;
     actual.real+=Number(x.Real)||0;
     empresas.set(clave,actual);
   }
@@ -132,24 +142,25 @@ function graficarDesviaciones(rows){
   const bajas=cambios.filter(x=>x.porcentaje< -5).sort((a,b)=>a.porcentaje-b.porcentaje);
   const max=Math.max(5,...altas.map(x=>Math.abs(x.porcentaje)),...bajas.map(x=>Math.abs(x.porcentaje)));
   const grupo=(titulo,items,clase)=>'<div class="small group-label">'+titulo+' · '+numero(items.length)+' empresas</div>'+
-    (items.length?items.map(x=>'<div class="chart-row '+clase+'"><span title="'+html(x.nombre)+' · Proyectado '+numero(x.proyectado)+' · Real '+numero(x.real)+'">'+html(x.nombre)+'</span><div class="bar"><i style="width:'+Math.min(100,Math.abs(x.porcentaje)/max*100)+'%"></i></div><small>'+(x.porcentaje>0?'+':'')+x.porcentaje.toLocaleString('es-PE',{maximumFractionDigits:1})+' %</small></div>').join(''):'<p class="help">Ninguna empresa en este rango.</p>');
-  $('desviaciones').innerHTML=grupo('Mayor a +5 %',altas,'desviacion-alta')+grupo('Menor a −5 %',bajas,'desviacion-baja');
+    (items.length?items.map(x=>'<div class="chart-row '+clase+'"><span title="'+html(x.nombre)+' · '+(fuente2?'2Personnel':'Proyectado')+' '+numero(x.proyectado)+' · Real '+numero(x.real)+'">'+html(x.nombre)+'</span><div class="bar"><i style="width:'+Math.min(100,Math.abs(x.porcentaje)/max*100)+'%"></i></div><small>'+(x.porcentaje>0?'+':'')+x.porcentaje.toLocaleString('es-PE',{maximumFractionDigits:1})+' %</small></div>').join(''):'<p class="help">Ninguna empresa en este rango.</p>');
+  $(id).innerHTML=grupo('Mayor a +5 %',altas,'desviacion-alta')+grupo('Menor a −5 %',bajas,'desviacion-baja');
 }
-let totalesPorEmpresa=[];
-function crearColumnasEmpresas(items,paraExportar=false){
+let totalesPorEmpresa=[],totales2PorEmpresa=[];
+function crearColumnasEmpresas(items,paraExportar=false,fuente2=false){
+  const etiquetaFuente=fuente2?"2Personnel":"Proyectado";
   const ancho=Math.max(660,90+items.length*115),alto=paraExportar?530:420;
   const canvas=document.createElement('canvas');canvas.width=ancho*2;canvas.height=alto*2;
   canvas.style.width=ancho+'px';canvas.style.height=alto+'px';canvas.dataset.chartContent='true';
-  canvas.setAttribute('role','img');canvas.setAttribute('aria-label','Proyectado y Real por empresa, ordenados alfabéticamente por nombre de empresa');
+  canvas.setAttribute('role','img');canvas.setAttribute('aria-label',etiquetaFuente+' y Real por empresa, ordenados alfabéticamente por nombre de empresa');
   const ctx=canvas.getContext('2d');ctx.scale(2,2);ctx.fillStyle='#fff';ctx.fillRect(0,0,ancho,alto);
   const arriba=paraExportar?125:35,base=arriba+250,izquierda=60,max=Math.max(1,...items.flatMap(x=>[x.p,x.r]));
-  if(paraExportar){ctx.fillStyle='#0e3f4f';ctx.font='bold 23px Segoe UI, sans-serif';ctx.fillText('Habitabilidad VPP · Dotación total por empresa',30,35);ctx.font='15px Segoe UI, sans-serif';ctx.fillText('Período: '+formato($('desde').value)+' al '+formato($('hasta').value),30,62);}
-  ctx.font='12px Segoe UI, sans-serif';ctx.fillStyle='#1f6f84';ctx.fillRect(izquierda,arriba-24,12,12);ctx.fillText('Proyectado',izquierda+18,arriba-14);ctx.fillStyle='#c9a84b';ctx.fillRect(izquierda+120,arriba-24,12,12);ctx.fillText('Real',izquierda+138,arriba-14);
+  if(paraExportar){ctx.fillStyle='#0e3f4f';ctx.font='bold 23px Segoe UI, sans-serif';ctx.fillText(fuente2?'Habitabilidad VPP · 2Personnel y Real por empresa':'Habitabilidad VPP · Dotación total por empresa',30,35);ctx.font='15px Segoe UI, sans-serif';ctx.fillText('Período: '+formato($('desde').value)+' al '+formato($('hasta').value),30,62);}
+  ctx.font='12px Segoe UI, sans-serif';ctx.fillStyle='#1f6f84';ctx.fillRect(izquierda,arriba-24,12,12);ctx.fillText(etiquetaFuente,izquierda+18,arriba-14);ctx.fillStyle='#c9a84b';ctx.fillRect(izquierda+120,arriba-24,12,12);ctx.fillText('Real',izquierda+138,arriba-14);
   for(let i=0;i<=5;i++){const y=base-250*i/5;ctx.strokeStyle='#e8eef0';ctx.beginPath();ctx.moveTo(izquierda,y);ctx.lineTo(ancho-20,y);ctx.stroke();ctx.fillStyle='#617681';ctx.textAlign='right';ctx.fillText(numero(Math.round(max*i/5)),izquierda-8,y+4);}
   const paso=(ancho-izquierda-20)/items.length;
   items.forEach((x,i)=>{
     const centro=izquierda+paso*(i+.5);ctx.font='12px Segoe UI, sans-serif';ctx.textAlign='center';
-    for(const [tipo,color,offset] of [['p','#1f6f84',-18],['r','#c9a84b',18]]){const altura=250*Math.max(0,x[tipo])/max;ctx.fillStyle=color;ctx.fillRect(centro+offset-14,base-altura,28,altura);ctx.fillStyle='#20323b';ctx.fillText(numero(x[tipo]),centro+offset,base-altura-7);}
+    for(const [tipo,color,offset] of [['p','#1f6f84',-18],['r','#c9a84b',18]]){const altura=250*Math.max(0,x[tipo])/max;ctx.fillStyle=color;ctx.fillRect(centro+offset-14,base-altura,28,altura);ctx.fillStyle='#20323b';ctx.fillText(x[tipo]==null?'Sin datos':numero(x[tipo]),centro+offset,base-altura-7);}
     ctx.font='11px Segoe UI, sans-serif';ctx.fillStyle='#20323b';const words=x.nombre.split(/\s+/),lines=[];let line='';
     for(const word of words){if(line&&ctx.measureText(line+' '+word).width>paso-8){lines.push(line);line=word;}else line+=(line?' ':'')+word;}if(line)lines.push(line);
     lines.slice(0,4).forEach((text,j)=>{if(j===3&&lines.length>4)text+='…';while(ctx.measureText(text).width>paso-8&&text.length>2)text=text.slice(0,-2)+'…';ctx.fillText(text,centro,base+20+j*15);});
@@ -162,6 +173,22 @@ function graficarEmpresas(rows){
   const el=$('totalesEmpresa');el.replaceChildren();
   if(!totalesPorEmpresa.length){el.innerHTML='<p class="help">No hay empresas para los filtros seleccionados.</p>';return;}
   for(let i=0;i<totalesPorEmpresa.length;i+=100)el.append(crearColumnasEmpresas(totalesPorEmpresa.slice(i,i+100)));
+}
+function agruparEmpresas2(rows){
+  const empresas=new Map();
+  for(const x of rows){
+    const actual=empresas.get(x.CodCia)||{nombre:x.Empresa,p:null,r:null};
+    if(x.Personal2!=null)actual.p=(actual.p??0)+Number(x.Personal2);
+    if(x.Real!=null&&Number(x.RealTipos)>=1)actual.r=(actual.r??0)+Number(x.Real);
+    empresas.set(x.CodCia,actual);
+  }
+  return [...empresas.values()].sort((a,b)=>a.nombre.localeCompare(b.nombre,"es",{sensitivity:"base"}));
+}
+function graficarEmpresas2(rows){
+  totales2PorEmpresa=agruparEmpresas2(rows);
+  const el=$('totalesEmpresa2');el.replaceChildren();
+  if(!totales2PorEmpresa.length){el.innerHTML='<p class="help">No hay empresas para los filtros seleccionados.</p>';return;}
+  for(let i=0;i<totales2PorEmpresa.length;i+=100)el.append(crearColumnasEmpresas(totales2PorEmpresa.slice(i,i+100),false,true));
 }
 function tabla(rows,h){
   let proy=0,real=0,proyComparable=0,realComparable=0,comparables=0;
@@ -182,11 +209,12 @@ function tabla(rows,h){
   $("comparableReal").textContent=comparables?numero(realComparable):"—";
   $("totalDiferencia").textContent=comparables?numero(realComparable-proyComparable):"—";
   $("filas").innerHTML=rows.length?rows.slice().sort((a,b)=>b.Fecha.localeCompare(a.Fecha)||a.Empresa.localeCompare(b.Empresa)).map(x=>{const p=estado(x,"proy"),r=x.Fecha>h?"No exigible":estado(x,"real"),ambos=p==="Completo"&&r==="Completo";return '<tr><td>'+formato(x.Fecha)+'</td><td>'+html(x.Empresa)+'</td><td>'+html(x.Contrato)+'</td><td>'+html(x.DescripcionContrato)+'</td><td>'+html(x.Responsables??'—')+'</td><td class="num">'+(x.Proyectado==null?"—":numero(x.Proyectado))+'</td><td class="num">'+(x.Real==null?"—":numero(x.Real))+'</td><td class="num">'+(ambos?numero(Number(x.Real)-Number(x.Proyectado)):"—")+'</td><td>'+etiqueta(p)+'</td><td>'+etiqueta(r)+'</td></tr>'}).join(""):'<tr><td colspan="10">No hay contratos para los filtros seleccionados.</td></tr>'}
-const titulosGrafico={grafico:"Dotación por día",pendientesProyectado:"Proyectado pendiente",pendientesReal:"Real pendiente",desviaciones:"Empresas con desviación mayor a ±5 %",totalesEmpresa:"Dotación total por empresa"};
+const titulosGrafico={grafico:"Dotación por día",pendientesProyectado:"Proyectado pendiente",pendientesReal:"Real pendiente",desviaciones:"Empresas con desviación mayor a ±5 %",totalesEmpresa:"Dotación total por empresa",totalesEmpresa2:"2Personnel y Real por empresa",desviaciones2:"Desviaciones Real vs. 2Personnel"};
 function descargarGrafico(id){
-  if(id==='totalesEmpresa'){
-    const partes=Math.ceil(totalesPorEmpresa.length/10);
-    for(let i=0;i<partes;i++){const canvas=crearColumnasEmpresas(totalesPorEmpresa.slice(i*10,(i+1)*10),true),a=document.createElement('a');a.href=canvas.toDataURL('image/png');a.download='Habitabilidad_TotalesEmpresa_'+$('desde').value+'_'+$('hasta').value+(partes>1?'_parte'+(i+1):'')+'.png';a.click();}
+  if(id==='totalesEmpresa'||id==='totalesEmpresa2'){
+    const fuente2=id==='totalesEmpresa2',items=fuente2?totales2PorEmpresa:totalesPorEmpresa;
+    const partes=Math.ceil(items.length/10);
+    for(let i=0;i<partes;i++){const canvas=crearColumnasEmpresas(items.slice(i*10,(i+1)*10),true,fuente2),a=document.createElement('a');a.href=canvas.toDataURL('image/png');a.download=(fuente2?'Habitabilidad_2Personnel_Real_':'Habitabilidad_TotalesEmpresa_')+$('desde').value+'_'+$('hasta').value+(partes>1?'_parte'+(i+1):'')+'.png';a.click();}
     return;
   }
   const contenedor=$(id),elementos=[...contenedor.children],filas=[];
@@ -221,7 +249,7 @@ document.querySelectorAll(".chart-download").forEach(b=>b.onclick=()=>{try{desca
 function csvCell(x){return '"'+String(x??"").replaceAll('"','""')+'"'}
 $("exportar").onclick=()=>{const h=hoyPE(),cab=["Fecha","CodCia","Empresa","Contrato","Descripcion","Responsables","Proyectado","Real","Diferencia","EstadoProyectado","EstadoReal"],lineas=[cab.map(csvCell).join(";")];for(const x of filtrados){const p=estado(x,"proy"),r=x.Fecha>h?"No exigible":estado(x,"real");lineas.push([x.Fecha,x.CodCia,x.Empresa,x.Contrato,x.DescripcionContrato,x.Responsables,x.Proyectado,x.Real,p==="Completo"&&r==="Completo"?Number(x.Real)-Number(x.Proyectado):"",p,r].map(csvCell).join(";"))}const blob=new Blob(["\ufeff"+lineas.join("\r\n")],{type:"text/csv;charset=utf-8"}),a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="Habitabilidad_General_"+$("desde").value+"_"+$("hasta").value+".csv";a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000)};
 $("empresa").onchange=()=>{actualizarContratos();render()};["contrato","responsables","estado"].forEach(id=>$(id).onchange=render);
-const hoy=hoyPE(),lunes=dias(hoy,-((new Date(hoy+"T12:00:00Z").getUTCDay()+6)%7));$("desde").value=lunes;$("hasta").value=dias(lunes,6);
+const hoy=hoyPE();$("desde").value=dias(hoy,-1);$("hasta").value=hoy;
 if(tokenSesion){consultar().then(()=>{$("accesoGeneral").hidden=true;$("tablero").hidden=false}).catch(()=>{})}
 </script>
 </body>
